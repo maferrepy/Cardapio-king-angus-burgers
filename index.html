@@ -230,6 +230,59 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
 .ot-btn.active .ot-name{color:var(--red2);}
 .ot-btn.active .ot-sub{color:var(--red2);opacity:.7;}
 
+/* ── STATUS BANNER ── */
+.status-banner{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:10px 20px;font-size:14px;font-weight:700;letter-spacing:.5px;
+  text-align:center;flex-wrap:wrap;
+}
+.status-banner.open{background:rgba(37,211,102,.12);border-bottom:1px solid rgba(37,211,102,.25);color:#25d366;}
+.status-banner.closed{background:rgba(214,40,40,.12);border-bottom:1px solid rgba(214,40,40,.25);color:var(--red2);}
+.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.status-banner.open .status-dot{background:#25d366;box-shadow:0 0 6px #25d366;animation:pulse-green 1.5s infinite;}
+.status-banner.closed .status-dot{background:var(--red2);}
+@keyframes pulse-green{0%,100%{opacity:1}50%{opacity:.4}}
+.status-time{font-size:12px;opacity:.8;font-weight:400;}
+.delivery-info{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-left:8px;padding-left:8px;border-left:1px solid var(--border);}
+
+/* ── CLOSED OVERLAY ── */
+.closed-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);
+  z-index:500;align-items:center;justify-content:center;flex-direction:column;
+  text-align:center;padding:30px;
+}
+.closed-overlay.show{display:flex;}
+.closed-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px 28px;max-width:340px;}
+.closed-icon{font-size:54px;margin-bottom:12px;}
+.closed-title{font-family:'Bebas Neue';font-size:32px;letter-spacing:2px;color:var(--red2);margin-bottom:8px;}
+.closed-sub{font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:20px;}
+.closed-hours{font-size:14px;color:var(--text);background:var(--bg);border-radius:8px;padding:12px;margin-bottom:20px;line-height:2;}
+.closed-wa{display:inline-flex;align-items:center;gap:8px;background:#25d366;color:#fff;border:none;font-family:'Bebas Neue';font-size:18px;letter-spacing:1px;padding:13px 24px;border-radius:8px;cursor:pointer;text-decoration:none;}
+
+/* ── TRACKING SCREEN ── */
+.tracking-overlay{position:fixed;inset:0;background:#0a0a0a;z-index:600;display:none;flex-direction:column;align-items:center;justify-content:center;padding:30px;}
+.tracking-overlay.open{display:flex;}
+.tracking-box{width:100%;max-width:380px;text-align:center;}
+.tracking-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:#ffd166;margin-bottom:6px;}
+.tracking-sub{font-size:14px;color:#888;margin-bottom:32px;}
+.tracking-steps{display:flex;flex-direction:column;gap:0;width:100%;}
+.tracking-step{display:flex;align-items:flex-start;gap:16px;position:relative;padding-bottom:28px;}
+.tracking-step:last-child{padding-bottom:0;}
+.tracking-step:not(:last-child)::after{content:'';position:absolute;left:19px;top:40px;width:2px;bottom:0;background:#242428;}
+.tracking-step.done::after{background:#25d366;}
+.tracking-step.active::after{background:linear-gradient(#25d366,#242428);}
+.ts-icon{width:40px;height:40px;border-radius:50%;border:2px solid #242428;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:#111113;position:relative;z-index:1;}
+.tracking-step.done .ts-icon{border-color:#25d366;background:rgba(37,211,102,.1);}
+.tracking-step.active .ts-icon{border-color:#ffd166;background:rgba(255,209,102,.1);animation:pulse-gold 1.5s infinite;}
+@keyframes pulse-gold{0%,100%{box-shadow:0 0 0 0 rgba(255,209,102,.4)}50%{box-shadow:0 0 0 8px rgba(255,209,102,0)}}
+.ts-info{text-align:left;padding-top:8px;}
+.ts-name{font-size:15px;font-weight:600;color:#888;}
+.tracking-step.done .ts-name{color:#25d366;}
+.tracking-step.active .ts-name{color:#ffd166;}
+.ts-desc{font-size:12px;color:#555;margin-top:2px;}
+.tracking-step.active .ts-desc{color:#888;}
+.tracking-new-order{margin-top:32px;background:transparent;border:1px solid #333;color:#888;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;padding:12px 28px;border-radius:8px;cursor:pointer;}
+
 /* ── TOAST ── */
 .toast{position:fixed;top:18px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);color:var(--text);font-size:14px;font-weight:600;padding:11px 20px;border-radius:30px;z-index:9999;display:none;white-space:nowrap;animation:fadeIn .2s ease;}
 @keyframes fadeIn{from{opacity:0;transform:translateX(-50%) translateY(-6px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
@@ -242,6 +295,30 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
 </style>
 </head>
 <body>
+
+<!-- STATUS BANNER -->
+<div id="status-banner" class="status-banner open">
+  <span class="status-dot"></span>
+  <span id="status-text">ABERTO AGORA</span>
+  <span class="status-time" id="status-time"></span>
+  <span class="delivery-info">⏱️ <span id="delivery-time">40–60 min</span></span>
+</div>
+
+<!-- CLOSED OVERLAY -->
+<div class="closed-overlay" id="closed-overlay">
+  <div class="closed-box">
+    <div class="closed-icon">🔒</div>
+    <div class="closed-title">Estamos Fechados</div>
+    <div class="closed-sub">No momento não estamos recebendo pedidos. Volte no nosso horário de funcionamento!</div>
+    <div class="closed-hours">
+      🗓️ <strong>Terça a Domingo</strong><br>
+      🕖 <strong>19h às 2h</strong>
+    </div>
+    <a class="closed-wa" href="https://wa.me/5541995707747">
+      💬 Falar no WhatsApp
+    </a>
+  </div>
+</div>
 
 <!-- HERO -->
 <div class="hero">
@@ -423,6 +500,37 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
   </div>
 </div>
 
+<!-- TRACKING OVERLAY -->
+<div class="tracking-overlay" id="tracking-overlay">
+  <div class="tracking-box">
+    <div class="tracking-title">👑 SEU PEDIDO</div>
+    <div class="tracking-sub" id="tracking-sub">Acompanhe em tempo real</div>
+    <div class="tracking-steps">
+      <div class="tracking-step" id="ts-aguardando">
+        <div class="ts-icon">📋</div>
+        <div class="ts-info"><div class="ts-name">Pedido recebido</div><div class="ts-desc">Aguardando confirmação do pagamento</div></div>
+      </div>
+      <div class="tracking-step" id="ts-aceito">
+        <div class="ts-icon">✅</div>
+        <div class="ts-info"><div class="ts-name">Pedido aceito</div><div class="ts-desc">Pagamento confirmado!</div></div>
+      </div>
+      <div class="tracking-step" id="ts-preparando">
+        <div class="ts-icon">👨‍🍳</div>
+        <div class="ts-info"><div class="ts-name">Em preparação</div><div class="ts-desc">Seu burger está na chapa!</div></div>
+      </div>
+      <div class="tracking-step" id="ts-entrega">
+        <div class="ts-icon">🛵</div>
+        <div class="ts-info"><div class="ts-name" id="ts-entrega-nome">Saiu para entrega</div><div class="ts-desc" id="ts-entrega-desc">A caminho do seu endereço</div></div>
+      </div>
+      <div class="tracking-step" id="ts-entregue">
+        <div class="ts-icon">🎉</div>
+        <div class="ts-info"><div class="ts-name">Entregue!</div><div class="ts-desc">Bom apetite! 🍔</div></div>
+      </div>
+    </div>
+    <button class="tracking-new-order" onclick="newOrder()">+ Fazer novo pedido</button>
+  </div>
+</div>
+
 <!-- CART FLOAT -->
 <button class="cart-float" id="cart-float" onclick="openCart()">
   <span>🛒 VER CARRINHO</span>
@@ -596,6 +704,37 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
 const WA_NUMBER = '5541995707747'; // sem +
 const PIX_KEY   = '4073f74a-db6f-4b7d-acea-6c39f270478f';
 const DELIVERY_FEE = 5.00;
+
+// ── FIREBASE ─────────────────────────────────────────
+const FB_URL = 'https://king-angus-default-rtdb.firebaseio.com';
+let currentOrderId = null;
+
+async function saveOrderToFirebase(orderData){
+  try {
+    const res = await fetch(`${FB_URL}/pedidos.json`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({...orderData, status:'aguardando', createdAt: Date.now()})
+    });
+    const data = await res.json();
+    return data.name; // Firebase key
+  } catch(e){ return null; }
+}
+
+async function watchOrderStatus(orderId){
+  currentOrderId = orderId;
+  showTrackingScreen(orderId, 'aguardando');
+  // polling a cada 5s
+  const interval = setInterval(async ()=>{
+    try {
+      const res = await fetch(`${FB_URL}/pedidos/${orderId}.json`);
+      const data = await res.json();
+      if(!data){ clearInterval(interval); return; }
+      updateTrackingScreen(data.status);
+      if(data.status === 'entregue') clearInterval(interval);
+    } catch(e){}
+  }, 5000);
+}
 
 // ═══ MENU DATA ════════════════════════════════════════
 const BURGERS = {
@@ -826,6 +965,7 @@ function selectOrderType(type){
   ['delivery','retirada','balcao'].forEach(t=>{
     document.getElementById('ot-'+t).classList.toggle('active', t===type);
   });
+  updateDeliveryTime();
   renderCartSheet();
 }
 
@@ -1021,14 +1161,64 @@ function finalizeOrder(){
   // salvar cliente
   saveCliente(tel, nome, end, ref);
 
-  const url=`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
-  window.open(url,'_blank');
+  // salvar no Firebase e abrir tela de acompanhamento
+  const orderData = {
+    cliente: nome, tel, end, ref, obs,
+    tipo: orderType, itens: cart.map(c=>({name:c.name,qty:c.qty,price:c.unitPrice,details:c.details||''})),
+    subtotal: sub, taxa: fee, total
+  };
+
+  // ajusta label de entrega/retirada
+  if(orderType==='retirada'){
+    document.getElementById('ts-entrega-nome').textContent='Pronto para retirada';
+    document.getElementById('ts-entrega-desc').textContent='Seu pedido está te esperando!';
+  } else if(orderType==='balcao'){
+    document.getElementById('ts-entrega-nome').textContent='Pronto!';
+    document.getElementById('ts-entrega-desc').textContent='Pegue no balcão';
+  } else {
+    document.getElementById('ts-entrega-nome').textContent='Saiu para entrega';
+    document.getElementById('ts-entrega-desc').textContent='A caminho do seu endereço';
+  }
+  document.getElementById('tracking-sub').textContent=`Olá, ${nome}! Acompanhe em tempo real`;
+
+  saveOrderToFirebase(orderData).then(orderId=>{
+    if(orderId){
+      // adiciona ID na mensagem do WhatsApp
+      msg += `\n🔑 *ID do pedido:* ${orderId}`;
+      watchOrderStatus(orderId);
+    }
+    const url=`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+    window.open(url,'_blank');
+  });
 
   cart=[];
   orderType='delivery';
   document.getElementById('checkout-overlay').classList.remove('open');
+  document.getElementById('tracking-overlay').classList.add('open');
   updateCartFloat();
-  toast('Pedido enviado! Aguarde a confirmação 🎉',4000);
+}
+
+const TRACKING_ORDER = ['aguardando','aceito','preparando','entrega','entregue'];
+const TRACKING_IDS   = ['ts-aguardando','ts-aceito','ts-preparando','ts-entrega','ts-entregue'];
+
+function showTrackingScreen(orderId, status){
+  updateTrackingScreen(status);
+}
+
+function updateTrackingScreen(status){
+  const idx = TRACKING_ORDER.indexOf(status);
+  TRACKING_IDS.forEach((id,i)=>{
+    const el = document.getElementById(id);
+    el.classList.remove('done','active');
+    if(i < idx) el.classList.add('done');
+    else if(i === idx) el.classList.add('active');
+  });
+}
+
+function newOrder(){
+  document.getElementById('tracking-overlay').classList.remove('open');
+  currentOrderId = null;
+  updateCartFloat();
 }
 
 // ═══ REFRIGERANTE ════════════════════════════════════
@@ -1115,8 +1305,83 @@ function confirmRefri(){
   updateCartFloat();
 }
 
+// ═══ HORÁRIO / STATUS ════════════════════════════════
+// Dias: 0=Dom, 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sab
+const HORARIOS = {
+  0: {open:19, close:26}, // Dom: 19h às 2h (+1d = 26)
+  2: {open:19, close:26}, // Ter
+  3: {open:19, close:26}, // Qua
+  4: {open:19, close:26}, // Qui
+  5: {open:19, close:26}, // Sex
+  6: {open:19, close:26}, // Sab
+  // 1 = Segunda: fechado (não listado)
+};
+
+// Tempo estimado por tipo
+const DELIVERY_TIMES = {
+  delivery: '40–60 min',
+  retirada: '20–30 min',
+  balcao:   '15–25 min',
+};
+
+function checkStatus(){
+  const now   = new Date();
+  const day   = now.getDay();
+  const hour  = now.getHours() + now.getMinutes()/60;
+
+  // verifica se está dentro do horário (considera virada da meia-noite)
+  // hora depois meia-noite conta como hora anterior +24
+  const h = hour < 6 ? hour + 24 : hour; // ex: 1h = 25
+
+  const banner      = document.getElementById('status-banner');
+  const statusText  = document.getElementById('status-text');
+  const statusTime  = document.getElementById('status-time');
+  const closedOverlay = document.getElementById('closed-overlay');
+
+  // verifica dia atual ou dia anterior (para horários após meia-noite)
+  const todayHours = HORARIOS[day];
+  const prevDay    = (day + 6) % 7;
+  const prevHours  = HORARIOS[prevDay];
+
+  let isOpen = false;
+
+  if(todayHours && h >= todayHours.open && h < todayHours.close){
+    isOpen = true;
+  } else if(prevHours && h < prevHours.close - 24 + 24 && hour < 6){
+    // após meia-noite ainda dentro do horário do dia anterior
+    isOpen = true;
+  }
+
+  if(isOpen){
+    banner.className = 'status-banner open';
+    statusText.textContent = 'ABERTO AGORA';
+    // calcula fechamento
+    const closeHour = todayHours ? todayHours.close % 24 : (prevHours ? prevHours.close % 24 : 0);
+    statusTime.textContent = `· Fecha às ${String(closeHour).padStart(2,'0')}h`;
+    closedOverlay.classList.remove('show');
+  } else {
+    banner.className = 'status-banner closed';
+    statusText.textContent = 'FECHADO AGORA';
+    // próxima abertura
+    let nextDay = day;
+    for(let i=1;i<=7;i++){
+      nextDay = (day+i)%7;
+      if(HORARIOS[nextDay]){ break; }
+    }
+    const dayNames = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    statusTime.textContent = `· Abre ${dayNames[nextDay]} às ${HORARIOS[nextDay].open}h`;
+    closedOverlay.classList.add('show');
+  }
+}
+
+function updateDeliveryTime(){
+  document.getElementById('delivery-time').textContent = DELIVERY_TIMES[orderType] || '40–60 min';
+}
+
 // ═══ INIT ══════════════════════════════════════════════
 document.getElementById('pix-key-display').textContent = PIX_KEY;
+checkStatus();
+setInterval(checkStatus, 60000); // verifica a cada minuto
 </script>
 </body>
 </html>
