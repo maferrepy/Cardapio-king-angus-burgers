@@ -259,6 +259,14 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
 .closed-hours{font-size:14px;color:var(--text);background:var(--bg);border-radius:8px;padding:12px;margin-bottom:20px;line-height:2;}
 .closed-wa{display:inline-flex;align-items:center;gap:8px;background:#25d366;color:#fff;border:none;font-family:'Bebas Neue';font-size:18px;letter-spacing:1px;padding:13px 24px;border-radius:8px;cursor:pointer;text-decoration:none;}
 
+/* ── RATING ── */
+.rating-section{margin:20px 0;text-align:center;}
+.rating-label{font-size:15px;font-weight:600;color:var(--text);margin-bottom:12px;}
+.stars-row{display:flex;justify-content:center;gap:10px;}
+.star{font-size:42px;color:#333;cursor:pointer;transition:color .15s, transform .15s;line-height:1;}
+.star.active{color:#ffd166;}
+.star:hover{transform:scale(1.2);}
+
 /* ── TRACKING SCREEN ── */
 .tracking-overlay{position:fixed;inset:0;background:#0a0a0a;z-index:600;display:none;flex-direction:column;align-items:center;justify-content:center;padding:30px;}
 .tracking-overlay.open{display:flex;}
@@ -527,7 +535,45 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
         <div class="ts-info"><div class="ts-name">Entregue!</div><div class="ts-desc">Bom apetite! 🍔</div></div>
       </div>
     </div>
+    <button id="confirm-delivery-btn" onclick="confirmDelivery()" style="display:none;margin-top:24px;width:100%;background:#25d366;border:none;border-radius:10px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;padding:15px;cursor:pointer;">
+      ✅ RECEBI MEU PEDIDO
+    </button>
     <button class="tracking-new-order" onclick="newOrder()">+ Fazer novo pedido</button>
+  </div>
+</div>
+
+<!-- RATING OVERLAY -->
+<div class="tracking-overlay" id="rating-overlay">
+  <div class="tracking-box">
+    <div class="tracking-title">🌟 AVALIE SEU PEDIDO</div>
+    <div class="tracking-sub">Sua opinião é muito importante!</div>
+
+    <div class="rating-section">
+      <div class="rating-label">🍔 Como foi o lanche?</div>
+      <div class="stars-row" id="stars-lanche">
+        <span class="star" onclick="setRating('lanche',1)">★</span>
+        <span class="star" onclick="setRating('lanche',2)">★</span>
+        <span class="star" onclick="setRating('lanche',3)">★</span>
+        <span class="star" onclick="setRating('lanche',4)">★</span>
+        <span class="star" onclick="setRating('lanche',5)">★</span>
+      </div>
+    </div>
+
+    <div class="rating-section">
+      <div class="rating-label">🛵 Como foi a entrega?</div>
+      <div class="stars-row" id="stars-entrega">
+        <span class="star" onclick="setRating('entrega',1)">★</span>
+        <span class="star" onclick="setRating('entrega',2)">★</span>
+        <span class="star" onclick="setRating('entrega',3)">★</span>
+        <span class="star" onclick="setRating('entrega',4)">★</span>
+        <span class="star" onclick="setRating('entrega',5)">★</span>
+      </div>
+    </div>
+
+    <button id="submit-rating-btn" onclick="submitRating()" style="margin-top:24px;width:100%;background:var(--red);border:none;border-radius:10px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;padding:15px;cursor:pointer;opacity:.4;" disabled>
+      ENVIAR AVALIAÇÃO
+    </button>
+    <button class="tracking-new-order" style="margin-top:12px;" onclick="skipRating()">Pular avaliação</button>
   </div>
 </div>
 
@@ -1183,19 +1229,25 @@ function finalizeOrder(){
 
   saveOrderToFirebase(orderData).then(orderId=>{
     if(orderId){
-      // adiciona ID na mensagem do WhatsApp
       msg += `\n🔑 *ID do pedido:* ${orderId}`;
       watchOrderStatus(orderId);
     }
     const url=`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
     window.open(url,'_blank');
+    cart=[];
+    orderType='delivery';
+    document.getElementById('checkout-overlay').classList.remove('open');
+    document.getElementById('tracking-overlay').classList.add('open');
+    updateCartFloat();
+  }).catch(()=>{
+    // fallback se Firebase falhar — manda sem ID
+    const url=`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+    window.open(url,'_blank');
+    cart=[];
+    orderType='delivery';
+    document.getElementById('checkout-overlay').classList.remove('open');
+    updateCartFloat();
   });
-
-  cart=[];
-  orderType='delivery';
-  document.getElementById('checkout-overlay').classList.remove('open');
-  document.getElementById('tracking-overlay').classList.add('open');
-  updateCartFloat();
 }
 
 const TRACKING_ORDER = ['aguardando','aceito','preparando','entrega','entregue'];
@@ -1213,10 +1265,76 @@ function updateTrackingScreen(status){
     if(i < idx) el.classList.add('done');
     else if(i === idx) el.classList.add('active');
   });
+  // mostra botão confirmar entrega quando status = entrega
+  const confirmBtn = document.getElementById('confirm-delivery-btn');
+  if(confirmBtn) confirmBtn.style.display = status==='entrega' ? 'block' : 'none';
+}
+
+async function confirmDelivery(){
+  if(currentOrderId){
+    try {
+      await fetch(`${FB_URL}/pedidos/${currentOrderId}.json`,{
+        method:'PATCH',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({status:'entregue', confirmedAt: Date.now()})
+      });
+    } catch(e){}
+  }
+  updateTrackingScreen('entregue');
+  document.getElementById('confirm-delivery-btn').style.display='none';
+  // abre avaliação após 1.5s
+  setTimeout(()=>{
+    document.getElementById('tracking-overlay').classList.remove('open');
+    ratingData = {lanche:0, entrega:0};
+    ['lanche','entrega'].forEach(t=>{
+      document.getElementById('stars-'+t).querySelectorAll('.star').forEach(s=>s.classList.remove('active'));
+    });
+    const btn = document.getElementById('submit-rating-btn');
+    btn.disabled = true; btn.style.opacity = '.4';
+    document.getElementById('rating-overlay').classList.add('open');
+  }, 1500);
+}
+
+let ratingData = {lanche:0, entrega:0};
+
+function setRating(type, val){
+  ratingData[type] = val;
+  document.getElementById('stars-'+type).querySelectorAll('.star').forEach((s,i)=>{
+    s.classList.toggle('active', i < val);
+  });
+  const btn = document.getElementById('submit-rating-btn');
+  if(ratingData.lanche > 0 && ratingData.entrega > 0){
+    btn.disabled = false; btn.style.opacity = '1';
+  }
+}
+
+async function submitRating(){
+  if(currentOrderId){
+    try {
+      await fetch(`${FB_URL}/pedidos/${currentOrderId}.json`,{
+        method:'PATCH',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          avaliacao_lanche: ratingData.lanche,
+          avaliacao_entrega: ratingData.entrega,
+          avaliado_em: Date.now()
+        })
+      });
+    } catch(e){}
+  }
+  document.getElementById('rating-overlay').classList.remove('open');
+  toast('Obrigado pela avaliação! 🌟', 3000);
+  setTimeout(()=>newOrder(), 600);
+}
+
+function skipRating(){
+  document.getElementById('rating-overlay').classList.remove('open');
+  newOrder();
 }
 
 function newOrder(){
   document.getElementById('tracking-overlay').classList.remove('open');
+  document.getElementById('rating-overlay').classList.remove('open');
   currentOrderId = null;
   updateCartFloat();
 }
