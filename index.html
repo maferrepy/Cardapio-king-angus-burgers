@@ -320,7 +320,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
         <div class="item-price-wrap"><div class="item-price">R$ 36,99</div></div>
       </div>
       <div class="item-desc">Burger + batata frita + refrigerante</div>
-      <button class="add-btn" onclick="addSimple('Combo Angus Supremo',36.99)">+ Adicionar</button>
+      <button class="add-btn" onclick="openCombo('Combo Angus Supremo',36.99)">+ Adicionar</button>
     </div>
 
     <div class="item-card">
@@ -329,7 +329,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
         <div class="item-price-wrap"><div class="item-price">R$ 39,99</div></div>
       </div>
       <div class="item-desc">Burger + batata frita + refrigerante</div>
-      <button class="add-btn" onclick="addSimple('Combo Angus Bacon',39.99)">+ Adicionar</button>
+      <button class="add-btn" onclick="openCombo('Combo Angus Bacon',39.99)">+ Adicionar</button>
     </div>
 
     <div class="item-card">
@@ -338,7 +338,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
         <div class="item-price-wrap"><div class="item-price">R$ 44,99</div></div>
       </div>
       <div class="item-desc">Burger duplo + cheddar extra + bacon · Batata + refrigerante</div>
-      <button class="add-btn" onclick="addSimple('Combo Monstro',44.99)">+ Adicionar</button>
+      <button class="add-btn" onclick="openCombo('Combo Monstro',44.99)">+ Adicionar</button>
     </div>
   </div>
 
@@ -402,13 +402,16 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
 <div class="overlay" id="refri-overlay" onclick="outsideClose(event,'refri-overlay')">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <h2>🥤 Refrigerante Lata</h2>
-    <div class="sheet-price">R$ 4,99</div>
+    <h2 id="refri-title">🥤 Refrigerante Lata</h2>
+    <div class="sheet-price" id="refri-price">R$ 4,99</div>
+    <div id="refri-combo-info" style="display:none;font-size:13px;color:var(--muted);margin-bottom:14px;background:rgba(255,209,102,.08);border:1px solid rgba(255,209,102,.2);border-radius:8px;padding:10px 12px;">
+      🍟 Inclui batata frita · Escolha o sabor do refrigerante do combo
+    </div>
     <div class="opt-section">
-      <div class="opt-label">Escolha o sabor</div>
+      <div class="opt-label">🥤 Sabor do Refrigerante</div>
       <div class="opt-grid" id="refri-flavors"></div>
     </div>
-    <div class="qty-row">
+    <div class="qty-row" id="refri-qty-row">
       <div class="opt-label" style="margin:0">Qtd:</div>
       <button class="qty-btn" onclick="changeRefriQty(-1)">−</button>
       <span class="qty-num" id="refri-qty">1</span>
@@ -1030,13 +1033,36 @@ function finalizeOrder(){
 
 // ═══ REFRIGERANTE ════════════════════════════════════
 const REFRI_FLAVORS = ['🍎 Coca-Cola','🟡 Guaraná Antarctica','🟠 Fanta Laranja','🟣 Fanta Uva','🍋 Sprite','🫧 Schweppes'];
-let refriState = {flavor:null, qty:1};
+let refriState = {flavor:null, qty:1, isCombo:false, comboName:'', comboPrice:0};
 
 function openRefrigerante(){
-  refriState = {flavor:null, qty:1};
+  refriState = {flavor:null, qty:1, isCombo:false, comboName:'', comboPrice:0};
+  document.getElementById('refri-title').textContent = '🥤 Refrigerante Lata';
+  document.getElementById('refri-price').textContent = 'R$ 4,99';
+  document.getElementById('refri-combo-info').style.display = 'none';
+  document.getElementById('refri-qty-row').style.display = 'flex';
   document.getElementById('refri-qty').textContent = '1';
+  _buildRefriChips(4.99);
+  document.getElementById('refri-overlay').classList.add('open');
+}
+
+function openCombo(name, price){
+  refriState = {flavor:null, qty:1, isCombo:true, comboName:name, comboPrice:price};
+  document.getElementById('refri-title').textContent = name;
+  document.getElementById('refri-price').textContent = fmt(price);
+  document.getElementById('refri-combo-info').style.display = 'block';
+  document.getElementById('refri-qty-row').style.display = 'none'; // combo = 1 unidade
+  _buildRefriChips(price);
+  document.getElementById('refri-overlay').classList.add('open');
+}
+
+function _buildRefriChips(price){
   const wrap = document.getElementById('refri-flavors');
   wrap.innerHTML = '';
+  const btn = document.getElementById('refri-add-btn');
+  btn.disabled = true;
+  btn.style.opacity = '.4';
+  btn.innerHTML = '<span>SELECIONE UM SABOR</span>';
   REFRI_FLAVORS.forEach(f=>{
     const chip = document.createElement('div');
     chip.className = 'opt-chip';
@@ -1045,31 +1071,48 @@ function openRefrigerante(){
       wrap.querySelectorAll('.opt-chip').forEach(c=>c.classList.remove('selected'));
       chip.classList.add('selected');
       refriState.flavor = f;
-      const btn = document.getElementById('refri-add-btn');
       btn.disabled = false;
       btn.style.opacity = '1';
-      btn.innerHTML = `<span>ADICIONAR AO CARRINHO</span><span>R$ ${(4.99*refriState.qty).toFixed(2).replace('.',',')}</span>`;
+      const total = refriState.isCombo ? price : price * refriState.qty;
+      btn.innerHTML = `<span>ADICIONAR AO CARRINHO</span><span>${fmt(total)}</span>`;
     };
     wrap.appendChild(chip);
   });
-  document.getElementById('refri-overlay').classList.add('open');
 }
 
 function changeRefriQty(v){
+  if(refriState.isCombo) return;
   refriState.qty = Math.max(1, refriState.qty + v);
   document.getElementById('refri-qty').textContent = refriState.qty;
   if(refriState.flavor){
     const btn = document.getElementById('refri-add-btn');
-    btn.innerHTML = `<span>ADICIONAR AO CARRINHO</span><span>R$ ${(4.99*refriState.qty).toFixed(2).replace('.',',')}</span>`;
+    btn.innerHTML = `<span>ADICIONAR AO CARRINHO</span><span>${fmt(4.99 * refriState.qty)}</span>`;
   }
 }
 
 function confirmRefri(){
   if(!refriState.flavor) return;
-  cart.push({id:Date.now(), name:'🥤 Refrigerante — '+refriState.flavor, unitPrice:4.99, qty:refriState.qty, details:''});
+  if(refriState.isCombo){
+    cart.push({
+      id:Date.now(),
+      name: refriState.comboName,
+      unitPrice: refriState.comboPrice,
+      qty: 1,
+      details: `🥤 Refri: ${refriState.flavor}`
+    });
+    toast(`${refriState.comboName} adicionado! 🎉`);
+  } else {
+    cart.push({
+      id:Date.now(),
+      name:'🥤 Refrigerante — '+refriState.flavor,
+      unitPrice:4.99,
+      qty:refriState.qty,
+      details:''
+    });
+    toast(refriState.flavor+' adicionado! 🎉');
+  }
   document.getElementById('refri-overlay').classList.remove('open');
   updateCartFloat();
-  toast(refriState.flavor+' adicionado! 🎉');
 }
 
 // ═══ INIT ══════════════════════════════════════════════
