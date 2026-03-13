@@ -1049,82 +1049,93 @@ function validate(){
   return ok;
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// CORREÇÃO PRINCIPAL: WhatsApp é aberto IMEDIATAMENTE no clique do
+// usuário (antes de qualquer await), evitando o bloqueio de popup
+// no iOS/Android que ocorre dentro de callbacks assíncronos.
+// O Firebase é salvo em background APÓS o redirecionamento.
+// ═══════════════════════════════════════════════════════════════════
 function finalizeOrder(){
-  if(!validate())return;
-  const nome=document.getElementById('f-nome').value.trim();
-  const tel=document.getElementById('f-tel').value.trim();
-  const end=orderType==='delivery'?document.getElementById('f-end').value.trim():'';
-  const ref=orderType==='delivery'?document.getElementById('f-ref').value.trim():'';
-  const obs=document.getElementById('f-obs').value.trim();
-  const sub=cart.reduce((a,c)=>a+(c.unitPrice*c.qty),0);
-  const fee=orderType==='delivery'?DELIVERY_FEE:0;
-  const total=sub+fee;
-  const typeEmoji = orderType==='delivery'?'🛵 Delivery':orderType==='retirada'?'🏃 Retirada':'🪑 Balcão';
+  if(!validate()) return;
 
-  let msg=`👑 *NOVO PEDIDO — KING ANGUS* 👑\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`📦 *Tipo:* ${typeEmoji}\n`;
-  msg+=`👤 *Cliente:* ${nome}\n`;
-  msg+=`📞 *Telefone:* ${tel}\n`;
+  const nome = document.getElementById('f-nome').value.trim();
+  const tel  = document.getElementById('f-tel').value.trim();
+  const end  = orderType==='delivery' ? document.getElementById('f-end').value.trim() : '';
+  const ref  = orderType==='delivery' ? document.getElementById('f-ref').value.trim() : '';
+  const obs  = document.getElementById('f-obs').value.trim();
+  const sub  = cart.reduce((a,c) => a + (c.unitPrice * c.qty), 0);
+  const fee  = orderType==='delivery' ? DELIVERY_FEE : 0;
+  const total = sub + fee;
+  const typeEmoji = orderType==='delivery' ? '🛵 Delivery' : orderType==='retirada' ? '🏃 Retirada' : '🪑 Balcão';
+
+  // Monta a mensagem do WhatsApp
+  let msg = `👑 *NOVO PEDIDO — KING ANGUS* 👑\n`;
+  msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+  msg += `📦 *Tipo:* ${typeEmoji}\n`;
+  msg += `👤 *Cliente:* ${nome}\n`;
+  msg += `📞 *Telefone:* ${tel}\n`;
   if(orderType==='delivery'){
-    msg+=`📍 *Endereço:* ${end}\n`;
-    msg+=`📌 *Referência:* ${ref}\n`;
+    msg += `📍 *Endereço:* ${end}\n`;
+    msg += `📌 *Referência:* ${ref}\n`;
   }
-  if(obs) msg+=`📝 *Obs:* ${obs}\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`🛒 *ITENS DO PEDIDO:*\n`;
-  cart.forEach(c=>{
-    msg+=`\n▸ *${c.name}* × ${c.qty} — ${fmt(c.unitPrice*c.qty)}`;
-    if(c.details) msg+=`\n   _${c.details}_`;
+  if(obs) msg += `📝 *Obs:* ${obs}\n`;
+  msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+  msg += `🛒 *ITENS DO PEDIDO:*\n`;
+  cart.forEach(c => {
+    msg += `\n▸ *${c.name}* × ${c.qty} — ${fmt(c.unitPrice * c.qty)}`;
+    if(c.details) msg += `\n   _${c.details}_`;
   });
-  msg+=`\n\n━━━━━━━━━━━━━━━━━━━━━\n`;
-  if(orderType==='delivery') msg+=`📦 *Taxa de entrega:* ${fmt(fee)}\n`;
-  msg+=`💰 *TOTAL GERAL:* *${fmt(total)}*\n`;
-  msg+=`━━━━━━━━━━━━━━━━━━━━━\n`;
-  msg+=`💳 *Pagamento:* PIX\n`;
-  msg+=`🔑 *Chave PIX:* ${PIX_KEY}\n`;
-  msg+=`\n⚠️ _Envie o comprovante do PIX para confirmar o pedido!_`;
+  msg += `\n\n━━━━━━━━━━━━━━━━━━━━━\n`;
+  if(orderType==='delivery') msg += `📦 *Taxa de entrega:* ${fmt(fee)}\n`;
+  msg += `💰 *TOTAL GERAL:* *${fmt(total)}*\n`;
+  msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+  msg += `💳 *Pagamento:* PIX\n`;
+  msg += `🔑 *Chave PIX:* ${PIX_KEY}\n`;
+  msg += `\n⚠️ _Envie o comprovante do PIX para confirmar o pedido!_`;
 
+  // ✅ ABRE O WHATSAPP IMEDIATAMENTE (ainda no contexto do clique do usuário)
+  // Isso garante que o iOS/Android não bloqueie como popup
+  const waUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+  window.location.href = waUrl;
+
+  // Prepara a tela de tracking
+  if(orderType==='retirada'){
+    document.getElementById('ts-entrega-nome').textContent = 'Pronto para retirada';
+    document.getElementById('ts-entrega-desc').textContent = 'Seu pedido está te esperando!';
+  } else if(orderType==='balcao'){
+    document.getElementById('ts-entrega-nome').textContent = 'Pronto!';
+    document.getElementById('ts-entrega-desc').textContent = 'Pegue no balcão';
+  } else {
+    document.getElementById('ts-entrega-nome').textContent = 'Saiu para entrega';
+    document.getElementById('ts-entrega-desc').textContent = 'A caminho do seu endereço';
+  }
+  document.getElementById('tracking-sub').textContent = `Olá, ${nome}! Acompanhe em tempo real`;
+
+  // Salva cliente localmente
   saveCliente(tel, nome, end, ref);
 
+  // Limpa carrinho e UI
+  const cartSnapshot = [...cart];
+  cart = [];
+  orderType = 'delivery';
+  document.getElementById('checkout-overlay').classList.remove('open');
+  updateCartFloat();
+  document.getElementById('tracking-overlay').classList.add('open');
+  updateTrackingScreen('aguardando');
+
+  // Salva no Firebase em background (sem bloquear a abertura do WhatsApp)
   const orderData = {
     cliente: nome, tel, end, ref, obs,
-    tipo: orderType, itens: cart.map(c=>({name:c.name,qty:c.qty,price:c.unitPrice,details:c.details||''})),
+    tipo: orderType,
+    itens: cartSnapshot.map(c => ({name:c.name, qty:c.qty, price:c.unitPrice, details:c.details||''})),
     subtotal: sub, taxa: fee, total
   };
-
-  if(orderType==='retirada'){
-    document.getElementById('ts-entrega-nome').textContent='Pronto para retirada';
-    document.getElementById('ts-entrega-desc').textContent='Seu pedido está te esperando!';
-  } else if(orderType==='balcao'){
-    document.getElementById('ts-entrega-nome').textContent='Pronto!';
-    document.getElementById('ts-entrega-desc').textContent='Pegue no balcão';
-  } else {
-    document.getElementById('ts-entrega-nome').textContent='Saiu para entrega';
-    document.getElementById('ts-entrega-desc').textContent='A caminho do seu endereço';
-  }
-  document.getElementById('tracking-sub').textContent=`Olá, ${nome}! Acompanhe em tempo real`;
-
-  saveOrderToFirebase(orderData).then(orderId=>{
+  saveOrderToFirebase(orderData).then(orderId => {
     if(orderId){
-      msg += `\n🔑 *ID do pedido:* ${orderId}`;
+      currentOrderId = orderId;
       watchOrderStatus(orderId);
     }
-    const url=`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
-    window.open(url,'_blank');
-    cart=[];
-    orderType='delivery';
-    document.getElementById('checkout-overlay').classList.remove('open');
-    document.getElementById('tracking-overlay').classList.add('open');
-    updateCartFloat();
-  }).catch(()=>{
-    const url=`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
-    window.open(url,'_blank');
-    cart=[];
-    orderType='delivery';
-    document.getElementById('checkout-overlay').classList.remove('open');
-    updateCartFloat();
-  });
+  }).catch(()=>{});
 }
 
 const TRACKING_ORDER = ['aguardando','aceito','preparando','entrega','entregue'];
