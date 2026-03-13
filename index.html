@@ -239,7 +239,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
 .star:hover{transform:scale(1.2);}
 
 /* ── TRACKING SCREEN ── */
-.tracking-overlay{position:fixed;inset:0;background:#0a0a0a;z-index:600;display:none;flex-direction:column;align-items:center;justify-content:center;padding:30px;}
+.tracking-overlay{position:fixed;inset:0;background:#0a0a0a;z-index:600;display:none;flex-direction:column;align-items:center;justify-content:center;padding:30px;overflow-y:auto;}
 .tracking-overlay.open{display:flex;}
 .tracking-box{width:100%;max-width:380px;text-align:center;}
 .tracking-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:#ffd166;margin-bottom:6px;}
@@ -260,11 +260,56 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
 .tracking-step.active .ts-name{color:#ffd166;}
 .ts-desc{font-size:12px;color:#555;margin-top:2px;}
 .tracking-step.active .ts-desc{color:#888;}
-.tracking-new-order{margin-top:32px;background:transparent;border:1px solid #333;color:#888;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;padding:12px 28px;border-radius:8px;cursor:pointer;}
+.tracking-new-order{margin-top:16px;background:transparent;border:1px solid #333;color:#888;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;padding:12px 28px;border-radius:8px;cursor:pointer;}
+
+/* ── ORDER ID BOX ── */
+.order-id-box{
+  margin-top:24px;
+  background:#0f0f0f;
+  border:1.5px solid var(--gold);
+  border-radius:12px;
+  padding:14px 16px;
+  text-align:center;
+}
+.order-id-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px;}
+.order-id-value{
+  font-family:monospace;font-size:15px;font-weight:700;
+  color:var(--gold);letter-spacing:1px;
+  background:#1a1500;border:1px solid rgba(255,209,102,.25);
+  border-radius:8px;padding:10px 12px;
+  word-break:break-all;margin-bottom:10px;line-height:1.5;
+}
+.order-id-copy{
+  width:100%;background:var(--gold);border:none;color:#000;
+  font-family:'Bebas Neue';font-size:16px;letter-spacing:1px;
+  padding:10px;border-radius:8px;cursor:pointer;transition:all .15s;
+}
+.order-id-copy:active{opacity:.75;}
+.order-id-copy.copied{background:#6dc96d;color:#fff;}
+.order-id-loading{font-size:12px;color:var(--muted);margin-top:4px;min-height:18px;}
+
+/* ── COMPROVANTE BTN ── */
+.comprovante-btn{
+  margin-top:28px;width:100%;
+  background:rgba(37,211,102,.12);
+  border:1.5px solid #25d366;
+  color:#25d366;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:19px;letter-spacing:1.5px;
+  padding:14px;border-radius:10px;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  transition:all .2s;
+  text-decoration:none;
+}
+.comprovante-btn:active{background:rgba(37,211,102,.22);}
+.comprovante-pulse{animation:pulse-green 2s infinite;}
+@keyframes pulse-green{0%,100%{box-shadow:0 0 0 0 rgba(37,211,102,.35)}50%{box-shadow:0 0 0 10px rgba(37,211,102,0)}}
 
 /* ── TOAST ── */
 .toast{position:fixed;top:18px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);color:var(--text);font-size:14px;font-weight:600;padding:11px 20px;border-radius:30px;z-index:9999;display:none;white-space:nowrap;animation:fadeIn .2s ease;}
 @keyframes fadeIn{from{opacity:0;transform:translateX(-50%) translateY(-6px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
 /* ── FOOTER ── */
 .footer{background:var(--card);border-top:2px solid var(--red);margin-top:28px;padding:20px;text-align:center;border-radius:10px;}
@@ -455,46 +500,6 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
   </div>
 </div>
 
-<!-- PIX SEND OVERLAY -->
-<div class="checkout-overlay" id="pixsend-overlay">
-  <div class="checkout-sheet" style="padding-bottom:50px;">
-    <div class="sheet-handle"></div>
-    <h2>💳 PAGUE E ENVIE O PEDIDO</h2>
-
-    <div style="background:rgba(255,209,102,.08);border:1px solid rgba(255,209,102,.3);border-radius:12px;padding:14px 16px;margin-bottom:18px;display:flex;align-items:center;gap:12px;">
-      <span style="font-size:28px;">💰</span>
-      <div>
-        <div style="font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.8px;">Total a pagar</div>
-        <div id="pix-send-total" style="font-family:'Bebas Neue';font-size:28px;color:var(--gold);"></div>
-      </div>
-    </div>
-
-    <div class="pix-box">
-      <div class="pix-title">📲 PIX — Escaneie ou copie</div>
-      <div class="pix-qr-wrap">
-        <canvas id="pix-send-canvas" width="180" height="180"></canvas>
-      </div>
-      <div class="pix-key-label">Chave PIX</div>
-      <div class="pix-key" id="pix-send-key" style="margin-bottom:12px;"></div>
-      <button class="pix-copy-btn" id="pixsend-copy-btn" onclick="copyPixSend()" style="width:100%;font-size:17px;padding:13px;border-radius:9px;">
-        📋 Copiar chave PIX
-      </button>
-    </div>
-
-    <div style="background:rgba(37,211,102,.07);border:1px solid rgba(37,211,102,.25);border-radius:10px;padding:12px 14px;margin-bottom:18px;font-size:13px;color:#aaa;line-height:1.7;">
-      <strong style="color:#6dc96d;">✅ Como funciona:</strong><br>
-      1. Copie a chave PIX acima<br>
-      2. Faça o pagamento no seu banco<br>
-      3. Clique no botão abaixo para enviar o pedido + comprovante pelo WhatsApp
-    </div>
-
-    <button class="finalize-btn" onclick="sendToWhatsapp()" style="font-size:19px;padding:17px;">
-      <span>💬</span> ENVIAR PEDIDO + COMPROVANTE
-    </button>
-    <button class="close-btn" style="margin-top:10px;" onclick="document.getElementById('pixsend-overlay').classList.remove('open');document.getElementById('checkout-overlay').classList.add('open');">← Voltar</button>
-  </div>
-</div>
-
 <!-- TRACKING OVERLAY -->
 <div class="tracking-overlay" id="tracking-overlay">
   <div class="tracking-box">
@@ -522,7 +527,13 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
         <div class="ts-info"><div class="ts-name">Entregue!</div><div class="ts-desc">Bom apetite! 🍔</div></div>
       </div>
     </div>
-    <button id="confirm-delivery-btn" onclick="confirmDelivery()" style="display:none;margin-top:24px;width:100%;background:#25d366;border:none;border-radius:10px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;padding:15px;cursor:pointer;">
+
+    <!-- ✅ FIX 2: Botão de comprovante PIX -->
+    <a id="comprovante-btn" href="#" class="comprovante-btn comprovante-pulse" onclick="enviarComprovante(event)">
+      <span>📎</span> ENVIAR COMPROVANTE PIX
+    </a>
+
+    <button id="confirm-delivery-btn" onclick="confirmDelivery()" style="display:none;margin-top:16px;width:100%;background:#25d366;border:none;border-radius:10px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;padding:15px;cursor:pointer;">
       ✅ RECEBI MEU PEDIDO
     </button>
     <button class="tracking-new-order" onclick="newOrder()">+ Fazer novo pedido</button>
@@ -682,12 +693,24 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
       <label>Observações gerais</label>
       <textarea id="f-obs" rows="2" placeholder="Alguma observação geral do pedido?"></textarea>
     </div>
-    <div class="cart-totals" id="checkout-totals"></div>
-    <div style="background:rgba(37,211,102,.07);border:1px solid rgba(37,211,102,.25);border-radius:10px;padding:11px 14px;margin-bottom:14px;font-size:13px;color:#aaa;line-height:1.6;">
-      💳 No próximo passo você verá a <strong style="color:#6dc96d;">chave PIX</strong> e poderá enviar o pedido + comprovante pelo WhatsApp.
+    <div class="pix-box">
+      <div class="pix-title">💳 Pagamento via PIX</div>
+      <div class="pix-qr-wrap">
+        <canvas id="pix-qr-canvas" width="180" height="180"></canvas>
+      </div>
+      <div class="pix-key-label">Chave PIX (copie e cole)</div>
+      <div class="pix-key-row">
+        <div class="pix-key" id="pix-key-display"></div>
+        <button class="pix-copy-btn" id="pix-copy-btn" onclick="copyPix()">📋 Copiar</button>
+      </div>
+      <div class="pix-notice">
+        ⚠️ <strong>Atenção:</strong> Após enviar o pedido, pague via PIX e <strong>envie o comprovante pelo WhatsApp.</strong><br>
+        O pedido só será preparado após a <strong>confirmação do pagamento.</strong>
+      </div>
     </div>
-    <button class="finalize-btn" onclick="finalizeOrder()">
-      <span>➡️</span> CONTINUAR PARA O PAGAMENTO
+    <div class="cart-totals" id="checkout-totals"></div>
+    <button class="finalize-btn" id="finalize-btn" onclick="finalizeOrder()">
+      <span>💬</span> ENVIAR PEDIDO NO WHATSAPP
     </button>
     <button class="close-btn" style="margin-top:10px;" onclick="document.getElementById('checkout-overlay').classList.remove('open')">Voltar</button>
   </div>
@@ -703,6 +726,7 @@ const PIX_KEY   = '4073f74a-db6f-4b7d-acea-6c39f270478f';
 const DELIVERY_FEE = 5.00;
 const FB_URL = 'https://king-angus-default-rtdb.firebaseio.com';
 let currentOrderId = null;
+let pendingWaUrl = null; // ✅ FIX 1: guarda a URL do comprovante
 
 async function saveOrderToFirebase(orderData){
   try {
@@ -718,6 +742,8 @@ async function saveOrderToFirebase(orderData){
 
 async function watchOrderStatus(orderId){
   currentOrderId = orderId;
+  // Atualiza botão de comprovante com o orderId
+  updateComprovanteBtn(orderId);
   showTrackingScreen(orderId, 'aguardando');
   const interval = setInterval(async ()=>{
     try {
@@ -728,6 +754,32 @@ async function watchOrderStatus(orderId){
       if(data.status === 'entregue') clearInterval(interval);
     } catch(e){}
   }, 5000);
+}
+
+// ✅ FIX 2: Função do botão comprovante
+function updateComprovanteBtn(orderId, nome){
+  const nomeStr = nome ? `👤 *Cliente:* ${nome}\n` : '';
+  const idStr = orderId
+    ? `🔑 *ID do pedido:*\n\`${orderId}\``
+    : `_(ID sendo gerado...)_`;
+  const msg =
+    `📎 *COMPROVANTE PIX — KING ANGUS*\n` +
+    `━━━━━━━━━━━━━━━━━━━━━\n` +
+    nomeStr +
+    idStr + `\n` +
+    `━━━━━━━━━━━━━━━━━━━━━\n` +
+    `Segue em anexo o comprovante do pagamento! ✅`;
+  const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+  const btn = document.getElementById('comprovante-btn');
+  if(btn) btn.href = url;
+}
+
+function enviarComprovante(e){
+  e.preventDefault();
+  const btn = document.getElementById('comprovante-btn');
+  if(btn && btn.href && btn.href !== '#'){
+    window.open(btn.href, '_blank');
+  }
 }
 
 // ═══ MENU DATA ════════════════════════════════════════
@@ -1028,13 +1080,42 @@ function lookupCliente(val){
 function openCheckout(){
   if(!cart.length){toast('Carrinho vazio!');return;}
   document.getElementById('cart-overlay').classList.remove('open');
+  document.getElementById('pix-key-display').textContent=PIX_KEY;
+  const canvas=document.getElementById('pix-qr-canvas');
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const tmp=document.createElement('div');
+  tmp.style.display='none';
+  document.body.appendChild(tmp);
+  new QRCode(tmp,{text:PIX_KEY,width:168,height:168,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M});
+  setTimeout(()=>{
+    const img=tmp.querySelector('img')||tmp.querySelector('canvas');
+    if(img){
+      const qrImg=new Image();
+      qrImg.onload=()=>{
+        ctx.fillStyle='#ffffff';
+        ctx.roundRect?ctx.roundRect(0,0,180,180,8):ctx.fillRect(0,0,180,180);
+        ctx.fill();
+        ctx.drawImage(qrImg,6,6,168,168);
+      };
+      qrImg.src=img.src||(img.toDataURL&&img.toDataURL());
+    }
+    document.body.removeChild(tmp);
+  },100);
   const showAddr=orderType==='delivery';
   document.getElementById('delivery-fields').style.display=showAddr?'block':'none';
   renderCartTotals('checkout-totals');
   document.getElementById('checkout-overlay').classList.add('open');
 }
 
-// ═══ INIT ══════════════════════════════════════════════
+function copyPix(){
+  navigator.clipboard.writeText(PIX_KEY).then(()=>{
+    const btn=document.getElementById('pix-copy-btn');
+    btn.textContent='Copiado ✓';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='Copiar';btn.classList.remove('copied');},2500);
+  }).catch(()=>toast('Copie manualmente: '+PIX_KEY));
+}
+
 function validate(){
   let ok=true;
   const base=[['f-nome','err-nome'],['f-tel','err-tel']];
@@ -1048,161 +1129,95 @@ function validate(){
   return ok;
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// CORREÇÃO PRINCIPAL: WhatsApp é aberto IMEDIATAMENTE no clique do
-// usuário (antes de qualquer await), evitando o bloqueio de popup
-// no iOS/Android que ocorre dentro de callbacks assíncronos.
-// O Firebase é salvo em background APÓS o redirecionamento.
-// ═══════════════════════════════════════════════════════════════════
-function finalizeOrder(){
-  if(!validate()) return;
+// Aguarda Firebase, monta mensagem com ID, abre WhatsApp uma só vez
+async function finalizeOrder(){
+  if(!validate())return;
 
-  const nome = document.getElementById('f-nome').value.trim();
-  const tel  = document.getElementById('f-tel').value.trim();
-  const end  = orderType==='delivery' ? document.getElementById('f-end').value.trim() : '';
-  const ref  = orderType==='delivery' ? document.getElementById('f-ref').value.trim() : '';
-  const obs  = document.getElementById('f-obs').value.trim();
-  const sub  = cart.reduce((a,c) => a + (c.unitPrice * c.qty), 0);
-  const fee  = orderType==='delivery' ? DELIVERY_FEE : 0;
-  const total = sub + fee;
-  const typeEmoji = orderType==='delivery' ? '🛵 Delivery' : orderType==='retirada' ? '🏃 Retirada' : '🪑 Balcão';
+  // Desabilita botão e mostra loading
+  const btn = document.getElementById('finalize-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span style="display:inline-block;animation:spin .8s linear infinite">⏳</span> SALVANDO PEDIDO...';
+  btn.style.opacity = '.7';
 
-  // Monta a mensagem do WhatsApp
-  let msg = `👑 *NOVO PEDIDO — KING ANGUS* 👑\n`;
-  msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
-  msg += `📦 *Tipo:* ${typeEmoji}\n`;
-  msg += `👤 *Cliente:* ${nome}\n`;
-  msg += `📞 *Telefone:* ${tel}\n`;
+  const nome=document.getElementById('f-nome').value.trim();
+  const tel=document.getElementById('f-tel').value.trim();
+  const end=orderType==='delivery'?document.getElementById('f-end').value.trim():'';
+  const ref=orderType==='delivery'?document.getElementById('f-ref').value.trim():'';
+  const obs=document.getElementById('f-obs').value.trim();
+  const sub=cart.reduce((a,c)=>a+(c.unitPrice*c.qty),0);
+  const fee=orderType==='delivery'?DELIVERY_FEE:0;
+  const total=sub+fee;
+  const typeEmoji = orderType==='delivery'?'🛵 Delivery':orderType==='retirada'?'🏃 Retirada':'🪑 Balcão';
+
+  const orderData = {
+    cliente: nome, tel, end, ref, obs,
+    tipo: orderType, itens: cart.map(c=>({name:c.name,qty:c.qty,price:c.unitPrice,details:c.details||''})),
+    subtotal: sub, taxa: fee, total
+  };
+
+  // Salva no Firebase ANTES — para ter o ID na mensagem
+  let orderId = null;
+  try { orderId = await saveOrderToFirebase(orderData); } catch(e){}
+
+  // Monta mensagem com ID incluído
+  let msg=`👑 *NOVO PEDIDO — KING ANGUS* 👑\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━━━\n`;
+  if(orderId) msg+=`🔑 *ID do Pedido:* \`${orderId}\`\n`;
+  msg+=`📦 *Tipo:* ${typeEmoji}\n`;
+  msg+=`👤 *Cliente:* ${nome}\n`;
+  msg+=`📞 *Telefone:* ${tel}\n`;
   if(orderType==='delivery'){
-    msg += `📍 *Endereço:* ${end}\n`;
-    msg += `📌 *Referência:* ${ref}\n`;
+    msg+=`📍 *Endereço:* ${end}\n`;
+    msg+=`📌 *Referência:* ${ref}\n`;
   }
-  if(obs) msg += `📝 *Obs:* ${obs}\n`;
-  msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
-  msg += `🛒 *ITENS DO PEDIDO:*\n`;
-  cart.forEach(c => {
-    msg += `\n▸ *${c.name}* × ${c.qty} — ${fmt(c.unitPrice * c.qty)}`;
-    if(c.details) msg += `\n   _${c.details}_`;
+  if(obs) msg+=`📝 *Obs:* ${obs}\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━━━\n`;
+  msg+=`🛒 *ITENS DO PEDIDO:*\n`;
+  cart.forEach(c=>{
+    msg+=`\n▸ *${c.name}* × ${c.qty} — ${fmt(c.unitPrice*c.qty)}`;
+    if(c.details) msg+=`\n   _${c.details}_`;
   });
-  msg += `\n\n━━━━━━━━━━━━━━━━━━━━━\n`;
-  if(orderType==='delivery') msg += `📦 *Taxa de entrega:* ${fmt(fee)}\n`;
-  msg += `💰 *TOTAL GERAL:* *${fmt(total)}*\n`;
-  msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
-  msg += `💳 *Pagamento:* PIX\n`;
-  msg += `🔑 *Chave PIX:* ${PIX_KEY}\n`;
-  msg += `\n⚠️ _Envie o comprovante do PIX para confirmar o pedido!_`;
+  msg+=`\n\n━━━━━━━━━━━━━━━━━━━━━\n`;
+  if(orderType==='delivery') msg+=`📦 *Taxa de entrega:* ${fmt(fee)}\n`;
+  msg+=`💰 *TOTAL GERAL:* *${fmt(total)}*\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━━━\n`;
+  msg+=`💳 *Pagamento:* PIX\n`;
+  msg+=`🔑 *Chave PIX:* ${PIX_KEY}\n`;
+  msg+=`\n⚠️ _Envie o comprovante do PIX para confirmar o pedido!_`;
 
-  // Salva cliente localmente
+  // Abre WhatsApp com mensagem completa (inclui ID)
+  window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+
   saveCliente(tel, nome, end, ref);
 
-  // Guarda dados do pedido para usar no botão de envio
-  pendingOrder = {
-    nome, tel, end, ref, obs, sub, fee, total, typeEmoji,
-    waUrl: `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`,
-    cartSnapshot: [...cart],
-    orderType: orderType
-  };
-
-  // Fecha checkout e abre tela de PIX + envio
-  document.getElementById('checkout-overlay').classList.remove('open');
-  openPixSend();
-}
-
-// Dados do pedido pendente antes de enviar pro WhatsApp
-let pendingOrder = null;
-
-function openPixSend(){
-  if(!pendingOrder) return;
-  // Preenche os dados na tela de envio
-  document.getElementById('pix-send-total').textContent = fmt(pendingOrder.total);
-  document.getElementById('pix-send-key').textContent = PIX_KEY;
-
-  // Gera QR code na tela de envio
-  const canvas = document.getElementById('pix-send-canvas');
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  const tmp = document.createElement('div');
-  tmp.style.display = 'none';
-  document.body.appendChild(tmp);
-  new QRCode(tmp,{text:PIX_KEY,width:168,height:168,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M});
-  setTimeout(()=>{
-    const img = tmp.querySelector('img')||tmp.querySelector('canvas');
-    if(img){
-      const qrImg = new Image();
-      qrImg.onload = ()=>{
-        ctx.fillStyle = '#ffffff';
-        ctx.roundRect ? ctx.roundRect(0,0,180,180,8) : ctx.fillRect(0,0,180,180);
-        ctx.fill();
-        ctx.drawImage(qrImg,6,6,168,168);
-      };
-      qrImg.src = img.src||(img.toDataURL&&img.toDataURL());
-    }
-    document.body.removeChild(tmp);
-  },100);
-
-  document.getElementById('pixsend-overlay').classList.add('open');
-}
-
-function copyPixSend(){
-  navigator.clipboard.writeText(PIX_KEY).then(()=>{
-    const btn = document.getElementById('pixsend-copy-btn');
-    btn.textContent = '✓ Copiado!';
-    btn.classList.add('copied');
-    setTimeout(()=>{ btn.textContent = '📋 Copiar chave PIX'; btn.classList.remove('copied'); }, 2500);
-  }).catch(()=>{
-    // fallback para iOS antigo
-    const el = document.createElement('textarea');
-    el.value = PIX_KEY;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
-    toast('Chave PIX copiada! ✓');
-  });
-}
-
-function sendToWhatsapp(){
-  if(!pendingOrder) return;
-
-  // Prepara tracking
-  if(pendingOrder.orderType==='retirada'){
-    document.getElementById('ts-entrega-nome').textContent = 'Pronto para retirada';
-    document.getElementById('ts-entrega-desc').textContent = 'Seu pedido está te esperando!';
-  } else if(pendingOrder.orderType==='balcao'){
-    document.getElementById('ts-entrega-nome').textContent = 'Pronto!';
-    document.getElementById('ts-entrega-desc').textContent = 'Pegue no balcão';
+  // Prepara tela de tracking
+  if(orderType==='retirada'){
+    document.getElementById('ts-entrega-nome').textContent='Pronto para retirada';
+    document.getElementById('ts-entrega-desc').textContent='Seu pedido está te esperando!';
+  } else if(orderType==='balcao'){
+    document.getElementById('ts-entrega-nome').textContent='Pronto!';
+    document.getElementById('ts-entrega-desc').textContent='Pegue no balcão';
   } else {
-    document.getElementById('ts-entrega-nome').textContent = 'Saiu para entrega';
-    document.getElementById('ts-entrega-desc').textContent = 'A caminho do seu endereço';
+    document.getElementById('ts-entrega-nome').textContent='Saiu para entrega';
+    document.getElementById('ts-entrega-desc').textContent='A caminho do seu endereço';
   }
-  document.getElementById('tracking-sub').textContent = `Olá, ${pendingOrder.nome}! Acompanhe em tempo real`;
+  document.getElementById('tracking-sub').textContent=`Olá, ${nome}! Acompanhe em tempo real`;
 
-  // Limpa carrinho
-  const snap = pendingOrder.cartSnapshot;
-  const od   = pendingOrder;
-  cart = [];
-  updateCartFloat();
+  // Atualiza botão de comprovante com ID
+  updateComprovanteBtn(orderId);
 
-  // Fecha tela PIX e abre tracking
-  document.getElementById('pixsend-overlay').classList.remove('open');
+  // Reseta estado
+  cart=[];
+  orderType='delivery';
+  btn.disabled = false;
+  btn.innerHTML = '<span>💬</span> ENVIAR PEDIDO NO WHATSAPP';
+  btn.style.opacity = '1';
+  document.getElementById('checkout-overlay').classList.remove('open');
   document.getElementById('tracking-overlay').classList.add('open');
   updateTrackingScreen('aguardando');
+  updateCartFloat();
 
-  // ✅ Abre WhatsApp — ainda no contexto direto do clique do botão
-  window.open(pendingOrder.waUrl, '_blank');
-
-  // Salva no Firebase em background
-  const orderData = {
-    cliente: od.nome, tel: od.tel, end: od.end, ref: od.ref, obs: od.obs,
-    tipo: od.orderType,
-    itens: snap.map(c=>({name:c.name,qty:c.qty,price:c.unitPrice,details:c.details||''})),
-    subtotal: od.sub, taxa: od.fee, total: od.total
-  };
-  saveOrderToFirebase(orderData).then(orderId=>{
-    if(orderId){ currentOrderId = orderId; watchOrderStatus(orderId); }
-  }).catch(()=>{});
-
-  pendingOrder = null;
+  if(orderId) watchOrderStatus(orderId);
 }
 
 const TRACKING_ORDER = ['aguardando','aceito','preparando','entrega','entregue'];
@@ -1361,6 +1376,10 @@ function confirmRefri(){
   document.getElementById('refri-overlay').classList.remove('open');
   updateCartFloat();
 }
+
+// ═══ INIT ══════════════════════════════════════════════
+document.getElementById('pix-key-display').textContent = PIX_KEY;
+updateComprovanteBtn(null);
 </script>
 </body>
 </html>
