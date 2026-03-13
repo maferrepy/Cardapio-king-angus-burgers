@@ -304,30 +304,6 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
 </head>
 <body>
 
-<!-- STATUS BANNER -->
-<div id="status-banner" class="status-banner open">
-  <span class="status-dot"></span>
-  <span id="status-text">ABERTO AGORA</span>
-  <span class="status-time" id="status-time"></span>
-  <span class="delivery-info">⏱️ <span id="delivery-time">40–60 min</span></span>
-</div>
-
-<!-- CLOSED OVERLAY -->
-<div class="closed-overlay" id="closed-overlay">
-  <div class="closed-box">
-    <div class="closed-icon">🔒</div>
-    <div class="closed-title">Estamos Fechados</div>
-    <div class="closed-sub">No momento não estamos recebendo pedidos. Volte no nosso horário de funcionamento!</div>
-    <div class="closed-hours">
-      🗓️ <strong>Terça a Domingo</strong><br>
-      🕖 <strong>19h às 2h</strong>
-    </div>
-    <a class="closed-wa" href="https://wa.me/5541995707747">
-      💬 Falar no WhatsApp
-    </a>
-  </div>
-</div>
-
 <!-- HERO -->
 <div class="hero">
   <span class="crown">👑</span>
@@ -1423,17 +1399,6 @@ function confirmRefri(){
   updateCartFloat();
 }
 
-// ═══ HORÁRIO / STATUS ════════════════════════════════
-// Dias: 0=Dom, 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sab
-const HORARIOS = {
-  0: {open:19, close:26}, // Domingo
-  2: {open:19, close:26}, // Terça
-  3: {open:19, close:26}, // Quarta
-  4: {open:19, close:26}, // Quinta
-  5: {open:19, close:26}, // Sexta
-  6: {open:19, close:26}, // Sábado
-};
-
 // Tempo estimado por tipo
 const DELIVERY_TIMES = {
   delivery: '40–60 min',
@@ -1441,67 +1406,13 @@ const DELIVERY_TIMES = {
   balcao:   '15–25 min',
 };
 
-function checkStatus(){
-  document.getElementById('status-banner').className = 'status-banner open';
-  document.getElementById('status-text').textContent = 'ABERTO AGORA';
-  document.getElementById('status-time').textContent = '· Fecha às 02h';
-  document.getElementById('closed-overlay').classList.remove('show');
-}
-  // verifica se está dentro do horário (considera virada da meia-noite)
-  // hora depois meia-noite conta como hora anterior +24
-  const h = hour < 6 ? hour + 24 : hour; // ex: 1h = 25
-
-  const banner      = document.getElementById('status-banner');
-  const statusText  = document.getElementById('status-text');
-  const statusTime  = document.getElementById('status-time');
-  const closedOverlay = document.getElementById('closed-overlay');
-
-  // verifica dia atual ou dia anterior (para horários após meia-noite)
-  const todayHours = HORARIOS[day];
-  const prevDay    = (day + 6) % 7;
-  const prevHours  = HORARIOS[prevDay];
-
-  let isOpen = false;
-
-  if(todayHours && h >= todayHours.open && h < todayHours.close){
-    isOpen = true;
-  } else if(prevHours && h < prevHours.close - 24 + 24 && hour < 6){
-    // após meia-noite ainda dentro do horário do dia anterior
-    isOpen = true;
-  }
-
-  if(isOpen){
-    banner.className = 'status-banner open';
-    statusText.textContent = 'ABERTO AGORA';
-    // calcula fechamento
-    const closeHour = todayHours ? todayHours.close % 24 : (prevHours ? prevHours.close % 24 : 0);
-    statusTime.textContent = `· Fecha às ${String(closeHour).padStart(2,'0')}h`;
-    closedOverlay.classList.remove('show');
-  } else {
-    banner.className = 'status-banner closed';
-    statusText.textContent = 'FECHADO AGORA';
-    // próxima abertura
-    let nextDay = day;
-    for(let i=1;i<=7;i++){
-      nextDay = (day+i)%7;
-      if(HORARIOS[nextDay]){ break; }
-    }
-    const dayNames = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
-    statusTime.textContent = `· Abre ${dayNames[nextDay]} às ${HORARIOS[nextDay].open}h`;
-    closedOverlay.classList.add('show');
-  }
-}
-
 function updateDeliveryTime(){
-  document.getElementById('delivery-time').textContent = DELIVERY_TIMES[orderType] || '40–60 min';
+  const el = document.getElementById('delivery-time');
+  if(el) el.textContent = DELIVERY_TIMES[orderType] || '40–60 min';
 }
 
 // ═══ INIT ══════════════════════════════════════════════
 document.getElementById('pix-key-display').textContent = PIX_KEY;
-checkStatus();
-setInterval(checkStatus, 60000); // verifica a cada minuto
 </script>
 </body>
 </html>
-
-
