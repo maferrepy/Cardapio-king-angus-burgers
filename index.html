@@ -1141,9 +1141,17 @@ function finalizeOrder(){
   msg+=`\n⚠️ _Envie o comprovante do PIX para confirmar o pedido!_`;
 
   // ✅ Monta a URL e abre o WhatsApp IMEDIATAMENTE (síncrono)
-  const waUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
-  window.open(waUrl, '_blank');
+ const waUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
 
+// mostra tela de acompanhamento
+document.getElementById('checkout-overlay').classList.remove('open');
+document.getElementById('tracking-overlay').classList.add('open');
+updateTrackingScreen('aguardando');
+
+// abre WhatsApp depois
+setTimeout(()=>{
+  window.open(waUrl,'_blank');
+},500);
   // Prepara tela de tracking
   if(orderType==='retirada'){
     document.getElementById('ts-entrega-nome').textContent='Pronto para retirada';
