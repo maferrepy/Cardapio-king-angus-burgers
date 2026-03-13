@@ -1426,13 +1426,12 @@ function confirmRefri(){
 // ═══ HORÁRIO / STATUS ════════════════════════════════
 // Dias: 0=Dom, 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sab
 const HORARIOS = {
-  0: {open:19, close:26}, // Dom: 19h às 2h (+1d = 26)
-  2: {open:19, close:26}, // Ter
-  3: {open:19, close:26}, // Qua
-  4: {open:19, close:26}, // Qui
-  5: {open:09, close:26}, // Sex
-  6: {open:09, close:26}, // Sab
-  // 1 = Segunda: fechado (não listado)
+  0: {open:19, close:26}, // Domingo
+  2: {open:19, close:26}, // Terça
+  3: {open:19, close:26}, // Quarta
+  4: {open:19, close:26}, // Quinta
+  5: {open:19, close:26}, // Sexta
+  6: {open:19, close:26}, // Sábado
 };
 
 // Tempo estimado por tipo
@@ -1443,10 +1442,11 @@ const DELIVERY_TIMES = {
 };
 
 function checkStatus(){
-  const now   = new Date();
-  const day   = now.getDay();
-  const hour  = now.getHours() + now.getMinutes()/60;
-
+  document.getElementById('status-banner').className = 'status-banner open';
+  document.getElementById('status-text').textContent = 'ABERTO AGORA';
+  document.getElementById('status-time').textContent = '· Fecha às 02h';
+  document.getElementById('closed-overlay').classList.remove('show');
+}
   // verifica se está dentro do horário (considera virada da meia-noite)
   // hora depois meia-noite conta como hora anterior +24
   const h = hour < 6 ? hour + 24 : hour; // ex: 1h = 25
@@ -1503,4 +1503,5 @@ setInterval(checkStatus, 60000); // verifica a cada minuto
 </script>
 </body>
 </html>
+
 
