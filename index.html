@@ -230,35 +230,6 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
 .ot-btn.active .ot-name{color:var(--red2);}
 .ot-btn.active .ot-sub{color:var(--red2);opacity:.7;}
 
-/* ── STATUS BANNER ── */
-.status-banner{
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  padding:10px 20px;font-size:14px;font-weight:700;letter-spacing:.5px;
-  text-align:center;flex-wrap:wrap;
-}
-.status-banner.open{background:rgba(37,211,102,.12);border-bottom:1px solid rgba(37,211,102,.25);color:#25d366;}
-.status-banner.closed{background:rgba(214,40,40,.12);border-bottom:1px solid rgba(214,40,40,.25);color:var(--red2);}
-.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.status-banner.open .status-dot{background:#25d366;box-shadow:0 0 6px #25d366;animation:pulse-green 1.5s infinite;}
-.status-banner.closed .status-dot{background:var(--red2);}
-@keyframes pulse-green{0%,100%{opacity:1}50%{opacity:.4}}
-.status-time{font-size:12px;opacity:.8;font-weight:400;}
-.delivery-info{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-left:8px;padding-left:8px;border-left:1px solid var(--border);}
-
-/* ── CLOSED OVERLAY ── */
-.closed-overlay{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);
-  z-index:500;align-items:center;justify-content:center;flex-direction:column;
-  text-align:center;padding:30px;
-}
-.closed-overlay.show{display:flex;}
-.closed-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px 28px;max-width:340px;}
-.closed-icon{font-size:54px;margin-bottom:12px;}
-.closed-title{font-family:'Bebas Neue';font-size:32px;letter-spacing:2px;color:var(--red2);margin-bottom:8px;}
-.closed-sub{font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:20px;}
-.closed-hours{font-size:14px;color:var(--text);background:var(--bg);border-radius:8px;padding:12px;margin-bottom:20px;line-height:2;}
-.closed-wa{display:inline-flex;align-items:center;gap:8px;background:#25d366;color:#fff;border:none;font-family:'Bebas Neue';font-size:18px;letter-spacing:1px;padding:13px 24px;border-radius:8px;cursor:pointer;text-decoration:none;}
-
 /* ── RATING ── */
 .rating-section{margin:20px 0;text-align:center;}
 .rating-label{font-size:15px;font-weight:600;color:var(--text);margin-bottom:12px;}
@@ -312,7 +283,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
   <div class="divider"></div>
   <div class="hero-info">
     <strong>Av. Nossa Senhora da Aparecida, 322</strong><br>
-    Terça a Domingo · 18h às 23h<br>
+    Terça a Domingo · 19h às 2h<br>
     📲 (41) 99570-7747
   </div>
   <div class="badge-fire">🔥 Feitos na chapa quente na hora 🔥</div>
@@ -567,44 +538,32 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
     <h2 id="cs-title"></h2>
     <div class="sheet-price" id="cs-price"></div>
     <div class="sheet-desc" id="cs-desc"></div>
-
-    <!-- Ponto da carne -->
     <div class="opt-section">
       <div class="opt-label">🥩 Ponto da Carne</div>
       <div class="opt-grid" id="opt-ponto"></div>
     </div>
-
-    <!-- Queijo -->
     <div class="opt-section">
       <div class="opt-label">🧀 Tipo de Queijo</div>
       <div class="opt-grid" id="opt-queijo"></div>
     </div>
-
-    <!-- Duplo -->
     <div class="opt-section" id="opt-duplo-sec">
       <div class="opt-label">🔥 Tornar Duplo?</div>
       <div class="opt-grid" id="opt-duplo"></div>
     </div>
-
-    <!-- Extras -->
     <div class="opt-section">
       <div class="opt-label">➕ Extras (pagos)</div>
       <div class="opt-grid" id="opt-extras"></div>
     </div>
-
-    <!-- Remover -->
     <div class="opt-section" id="opt-remove-sec">
       <div class="opt-label">🚫 Remover Ingredientes</div>
       <div class="remove-list" id="opt-remove"></div>
     </div>
-
     <div class="qty-row">
       <div class="opt-label" style="margin:0">Qtd:</div>
       <button class="qty-btn" onclick="changeSheetQty(-1)">−</button>
       <span class="qty-num" id="sheet-qty">1</span>
       <button class="qty-btn" onclick="changeSheetQty(1)">+</button>
     </div>
-
     <button class="add-to-cart-btn" id="add-to-cart-btn" onclick="confirmAddToCart()">
       <span>ADICIONAR AO CARRINHO</span>
       <span id="add-btn-price"></span>
@@ -617,8 +576,6 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
   <div class="cart-sheet">
     <div class="sheet-handle"></div>
     <h2>🛒 MEU PEDIDO</h2>
-
-    <!-- TIPO DE PEDIDO -->
     <div class="order-type-wrap">
       <div class="order-type-label">📦 Como vai receber?</div>
       <div class="order-type-grid">
@@ -639,7 +596,6 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
         </div>
       </div>
     </div>
-
     <div id="cart-items-list"></div>
     <div class="cart-totals" id="cart-totals"></div>
     <button class="checkout-btn" onclick="openCheckout()">FINALIZAR PEDIDO →</button>
@@ -652,8 +608,6 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
   <div class="checkout-sheet">
     <div class="sheet-handle"></div>
     <h2>📋 SEUS DADOS</h2>
-
-    <!-- TELEFONE PRIMEIRO com lookup -->
     <div class="form-group">
       <label>Telefone *</label>
       <div style="display:flex;gap:8px;align-items:flex-start;">
@@ -662,19 +616,16 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
           <div class="err" id="err-tel"></div>
         </div>
       </div>
-      <!-- banner cliente encontrado -->
-      <div id="cliente-found" style="display:none;margin-top:8px;background:rgba(100,200,100,.12);border:1px solid rgba(100,200,100,.3);border-radius:8px;padding:10px 12px;font-size:13px;color:#6dc96d;display:none;align-items:center;gap:8px;">
+      <div id="cliente-found" style="display:none;margin-top:8px;background:rgba(100,200,100,.12);border:1px solid rgba(100,200,100,.3);border-radius:8px;padding:10px 12px;font-size:13px;color:#6dc96d;align-items:center;gap:8px;">
         <span style="font-size:18px;">👋</span>
         <span id="cliente-found-txt"></span>
       </div>
     </div>
-
     <div class="form-group">
       <label>Nome completo *</label>
       <input id="f-nome" type="text" placeholder="Seu nome">
       <div class="err" id="err-nome"></div>
     </div>
-
     <div id="delivery-fields">
       <div class="form-group">
         <label>Endereço completo *</label>
@@ -691,8 +642,6 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
       <label>Observações gerais</label>
       <textarea id="f-obs" rows="2" placeholder="Alguma observação geral do pedido?"></textarea>
     </div>
-
-    <!-- PIX BOX -->
     <div class="pix-box">
       <div class="pix-title">💳 Pagamento via PIX</div>
       <div class="pix-qr-wrap">
@@ -708,9 +657,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
         O pedido só será preparado após a <strong>confirmação do pagamento.</strong>
       </div>
     </div>
-
     <div class="cart-totals" id="checkout-totals"></div>
-
     <button class="finalize-btn" onclick="finalizeOrder()">
       <span>💬</span> ENVIAR PEDIDO NO WHATSAPP
     </button>
@@ -723,11 +670,9 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
 
 <script>
 // ═══ CONFIG ═══════════════════════════════════════════
-const WA_NUMBER = '5541995707747'; // sem +
+const WA_NUMBER = '5541995707747';
 const PIX_KEY   = '4073f74a-db6f-4b7d-acea-6c39f270478f';
 const DELIVERY_FEE = 5.00;
-
-// ── FIREBASE ─────────────────────────────────────────
 const FB_URL = 'https://king-angus-default-rtdb.firebaseio.com';
 let currentOrderId = null;
 
@@ -739,14 +684,13 @@ async function saveOrderToFirebase(orderData){
       body: JSON.stringify({...orderData, status:'aguardando', createdAt: Date.now()})
     });
     const data = await res.json();
-    return data.name; // Firebase key
+    return data.name;
   } catch(e){ return null; }
 }
 
 async function watchOrderStatus(orderId){
   currentOrderId = orderId;
   showTrackingScreen(orderId, 'aguardando');
-  // polling a cada 5s
   const interval = setInterval(async ()=>{
     try {
       const res = await fetch(`${FB_URL}/pedidos/${orderId}.json`);
@@ -793,12 +737,10 @@ const EXTRAS = [
   {name:'Picles extra',price:1.50},
 ];
 
-// ═══ STATE ═══════════════════════════════════════════
 let cart = [];
 let sheetState = {};
-let orderType = 'delivery'; // delivery | retirada | balcao
+let orderType = 'delivery';
 
-// ═══ UTILS ════════════════════════════════════════════
 const fmt = v => 'R$ '+Number(v).toFixed(2).replace('.',',');
 
 function toast(msg,ms=2200){
@@ -820,25 +762,17 @@ function outsideClose(e,id){
   }
 }
 
-// ═══ CUSTOMIZE SHEET ══════════════════════════════════
 function openCustomize(key){
   const b = BURGERS[key];
   sheetState = {key,base:b.price,doublePrice:b.doublePrice,extras:[],remove:[],ponto:PONTOS[0],queijo:QUEIJOS[0],isDouble:false,qty:1};
-
   document.getElementById('cs-title').textContent = b.name;
   document.getElementById('cs-price').textContent = fmt(b.price);
   document.getElementById('cs-desc').textContent = b.desc;
   document.getElementById('sheet-qty').textContent = '1';
-
-  // Ponto
   buildChips('opt-ponto',PONTOS,null,v=>{sheetState.ponto=v;updateAddBtn();});
   selectChip('opt-ponto',PONTOS[0]);
-
-  // Queijo
   buildChips('opt-queijo',QUEIJOS,null,v=>{sheetState.queijo=v;updateAddBtn();});
   selectChip('opt-queijo',QUEIJOS[0]);
-
-  // Duplo
   const dOpts=[{label:'Não',val:false},{label:`Sim (+${fmt(b.doublePrice - b.price)})`,val:true}];
   const dWrap=document.getElementById('opt-duplo');
   dWrap.innerHTML='';
@@ -854,8 +788,6 @@ function openCustomize(key){
     };
     dWrap.appendChild(chip);
   });
-
-  // Extras
   const eWrap=document.getElementById('opt-extras');
   eWrap.innerHTML='';
   EXTRAS.forEach(ex=>{
@@ -870,8 +802,6 @@ function openCustomize(key){
     };
     eWrap.appendChild(chip);
   });
-
-  // Remover
   const rWrap=document.getElementById('opt-remove');
   rWrap.innerHTML='';
   b.removable.forEach(ing=>{
@@ -885,7 +815,6 @@ function openCustomize(key){
     };
     rWrap.appendChild(chip);
   });
-
   updateAddBtn();
   document.getElementById('customize-overlay').classList.add('open');
 }
@@ -936,24 +865,14 @@ function confirmAddToCart(){
   if(sheetState.isDouble) details.push('🔥 DUPLO');
   if(sheetState.extras.length) details.push('Extras: '+sheetState.extras.map(e=>e.name).join(', '));
   if(sheetState.remove.length) details.push('Sem: '+sheetState.remove.join(', '));
-
   const unitPrice = sheetState.isDouble ? sheetState.doublePrice : sheetState.base;
   const extraCost = sheetState.extras.reduce((a,e)=>a+e.price,0);
-
-  cart.push({
-    id:Date.now(),
-    name:b.name,
-    unitPrice:unitPrice+extraCost,
-    qty:sheetState.qty,
-    details:details.join(' · ')
-  });
-
+  cart.push({id:Date.now(),name:b.name,unitPrice:unitPrice+extraCost,qty:sheetState.qty,details:details.join(' · ')});
   document.getElementById('customize-overlay').classList.remove('open');
   updateCartFloat();
   toast(`${b.name} adicionado! 🎉`);
 }
 
-// ═══ SIMPLE ADD ═══════════════════════════════════════
 function addSimple(name,price){
   const ex = cart.find(c=>c.name===name&&!c.details);
   if(ex){ex.qty++;} else {cart.push({id:Date.now(),name,unitPrice:price,qty:1,details:''});}
@@ -961,7 +880,6 @@ function addSimple(name,price){
   toast(`${name} adicionado! 🎉`);
 }
 
-// ═══ CART FLOAT ═══════════════════════════════════════
 function updateCartFloat(){
   const total = cart.reduce((a,c)=>a+(c.unitPrice*c.qty),0);
   const count = cart.reduce((a,c)=>a+c.qty,0);
@@ -972,7 +890,6 @@ function updateCartFloat(){
   document.getElementById('cart-total-label').textContent=fmt(total);
 }
 
-// ═══ CART SHEET ═══════════════════════════════════════
 function openCart(){
   renderCartSheet();
   document.getElementById('cart-overlay').classList.add('open');
@@ -987,7 +904,6 @@ function selectOrderType(type){
   ['delivery','retirada','balcao'].forEach(t=>{
     document.getElementById('ot-'+t).classList.toggle('active', t===type);
   });
-  updateDeliveryTime();
   renderCartSheet();
 }
 
@@ -1047,15 +963,12 @@ function renderCartTotals(id){
   `;
 }
 
-// ═══ CLIENTES (localStorage) ══════════════════════════
 function phoneKey(tel){ return 'cli_'+tel.replace(/\D/g,''); }
-
 function saveCliente(tel,nome,end,ref){
   const key = phoneKey(tel);
   const data = {nome, tel, end:end||'', ref:ref||'', updatedAt: new Date().toISOString()};
   try{ localStorage.setItem(key, JSON.stringify(data)); }catch(e){}
 }
-
 function loadCliente(tel){
   try{
     const raw = localStorage.getItem(phoneKey(tel));
@@ -1073,7 +986,6 @@ function lookupCliente(val){
   lookupTimer = setTimeout(()=>{
     const c = loadCliente(digits);
     if(c){
-      // preenche campos automaticamente
       document.getElementById('f-nome').value = c.nome||'';
       if(c.end) document.getElementById('f-end').value = c.end;
       if(c.ref) document.getElementById('f-ref').value = c.ref;
@@ -1085,17 +997,13 @@ function lookupCliente(val){
   }, 400);
 }
 
-// ═══ CHECKOUT ═════════════════════════════════════════
 function openCheckout(){
   if(!cart.length){toast('Carrinho vazio!');return;}
   document.getElementById('cart-overlay').classList.remove('open');
-  // pix key
   document.getElementById('pix-key-display').textContent=PIX_KEY;
-  // QR code
   const canvas=document.getElementById('pix-qr-canvas');
   const ctx=canvas.getContext('2d');
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  // use QRCode lib to draw into a temp div then copy
   const tmp=document.createElement('div');
   tmp.style.display='none';
   document.body.appendChild(tmp);
@@ -1114,7 +1022,6 @@ function openCheckout(){
     }
     document.body.removeChild(tmp);
   },100);
-  // show/hide address fields
   const showAddr=orderType==='delivery';
   document.getElementById('delivery-fields').style.display=showAddr?'block':'none';
   renderCartTotals('checkout-totals');
@@ -1134,7 +1041,6 @@ function validate(){
   const base=[['f-nome','err-nome'],['f-tel','err-tel']];
   const addrFields=[['f-end','err-end'],['f-ref','err-ref']];
   const fields = orderType==='delivery' ? [...base,...addrFields] : base;
-  // clear all errors first
   [...base,...addrFields].forEach(([,eid])=>document.getElementById(eid).textContent='');
   fields.forEach(([fid,eid])=>{
     const v=document.getElementById(fid).value.trim();
@@ -1150,7 +1056,6 @@ function finalizeOrder(){
   const end=orderType==='delivery'?document.getElementById('f-end').value.trim():'';
   const ref=orderType==='delivery'?document.getElementById('f-ref').value.trim():'';
   const obs=document.getElementById('f-obs').value.trim();
-
   const sub=cart.reduce((a,c)=>a+(c.unitPrice*c.qty),0);
   const fee=orderType==='delivery'?DELIVERY_FEE:0;
   const total=sub+fee;
@@ -1180,17 +1085,14 @@ function finalizeOrder(){
   msg+=`🔑 *Chave PIX:* ${PIX_KEY}\n`;
   msg+=`\n⚠️ _Envie o comprovante do PIX para confirmar o pedido!_`;
 
-  // salvar cliente
   saveCliente(tel, nome, end, ref);
 
-  // salvar no Firebase e abrir tela de acompanhamento
   const orderData = {
     cliente: nome, tel, end, ref, obs,
     tipo: orderType, itens: cart.map(c=>({name:c.name,qty:c.qty,price:c.unitPrice,details:c.details||''})),
     subtotal: sub, taxa: fee, total
   };
 
-  // ajusta label de entrega/retirada
   if(orderType==='retirada'){
     document.getElementById('ts-entrega-nome').textContent='Pronto para retirada';
     document.getElementById('ts-entrega-desc').textContent='Seu pedido está te esperando!';
@@ -1216,7 +1118,6 @@ function finalizeOrder(){
     document.getElementById('tracking-overlay').classList.add('open');
     updateCartFloat();
   }).catch(()=>{
-    // fallback se Firebase falhar — manda sem ID
     const url=`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
     window.open(url,'_blank');
     cart=[];
@@ -1229,9 +1130,7 @@ function finalizeOrder(){
 const TRACKING_ORDER = ['aguardando','aceito','preparando','entrega','entregue'];
 const TRACKING_IDS   = ['ts-aguardando','ts-aceito','ts-preparando','ts-entrega','ts-entregue'];
 
-function showTrackingScreen(orderId, status){
-  updateTrackingScreen(status);
-}
+function showTrackingScreen(orderId, status){ updateTrackingScreen(status); }
 
 function updateTrackingScreen(status){
   const idx = TRACKING_ORDER.indexOf(status);
@@ -1241,7 +1140,6 @@ function updateTrackingScreen(status){
     if(i < idx) el.classList.add('done');
     else if(i === idx) el.classList.add('active');
   });
-  // mostra botão confirmar entrega quando status = entrega
   const confirmBtn = document.getElementById('confirm-delivery-btn');
   if(confirmBtn) confirmBtn.style.display = status==='entrega' ? 'block' : 'none';
 }
@@ -1258,7 +1156,6 @@ async function confirmDelivery(){
   }
   updateTrackingScreen('entregue');
   document.getElementById('confirm-delivery-btn').style.display='none';
-  // abre avaliação após 1.5s
   setTimeout(()=>{
     document.getElementById('tracking-overlay').classList.remove('open');
     ratingData = {lanche:0, entrega:0};
@@ -1335,7 +1232,7 @@ function openCombo(name, price){
   document.getElementById('refri-title').textContent = name;
   document.getElementById('refri-price').textContent = fmt(price);
   document.getElementById('refri-combo-info').style.display = 'block';
-  document.getElementById('refri-qty-row').style.display = 'none'; // combo = 1 unidade
+  document.getElementById('refri-qty-row').style.display = 'none';
   _buildRefriChips(price);
   document.getElementById('refri-overlay').classList.add('open');
 }
@@ -1377,38 +1274,14 @@ function changeRefriQty(v){
 function confirmRefri(){
   if(!refriState.flavor) return;
   if(refriState.isCombo){
-    cart.push({
-      id:Date.now(),
-      name: refriState.comboName,
-      unitPrice: refriState.comboPrice,
-      qty: 1,
-      details: `🥤 Refri: ${refriState.flavor}`
-    });
+    cart.push({id:Date.now(),name:refriState.comboName,unitPrice:refriState.comboPrice,qty:1,details:`🥤 Refri: ${refriState.flavor}`});
     toast(`${refriState.comboName} adicionado! 🎉`);
   } else {
-    cart.push({
-      id:Date.now(),
-      name:'🥤 Refrigerante — '+refriState.flavor,
-      unitPrice:4.99,
-      qty:refriState.qty,
-      details:''
-    });
+    cart.push({id:Date.now(),name:'🥤 Refrigerante — '+refriState.flavor,unitPrice:4.99,qty:refriState.qty,details:''});
     toast(refriState.flavor+' adicionado! 🎉');
   }
   document.getElementById('refri-overlay').classList.remove('open');
   updateCartFloat();
-}
-
-// Tempo estimado por tipo
-const DELIVERY_TIMES = {
-  delivery: '40–60 min',
-  retirada: '20–30 min',
-  balcao:   '15–25 min',
-};
-
-function updateDeliveryTime(){
-  const el = document.getElementById('delivery-time');
-  if(el) el.textContent = DELIVERY_TIMES[orderType] || '40–60 min';
 }
 
 // ═══ INIT ══════════════════════════════════════════════
