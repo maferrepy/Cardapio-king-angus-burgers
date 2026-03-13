@@ -455,6 +455,46 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
   </div>
 </div>
 
+<!-- PIX SEND OVERLAY -->
+<div class="checkout-overlay" id="pixsend-overlay">
+  <div class="checkout-sheet" style="padding-bottom:50px;">
+    <div class="sheet-handle"></div>
+    <h2>💳 PAGUE E ENVIE O PEDIDO</h2>
+
+    <div style="background:rgba(255,209,102,.08);border:1px solid rgba(255,209,102,.3);border-radius:12px;padding:14px 16px;margin-bottom:18px;display:flex;align-items:center;gap:12px;">
+      <span style="font-size:28px;">💰</span>
+      <div>
+        <div style="font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.8px;">Total a pagar</div>
+        <div id="pix-send-total" style="font-family:'Bebas Neue';font-size:28px;color:var(--gold);"></div>
+      </div>
+    </div>
+
+    <div class="pix-box">
+      <div class="pix-title">📲 PIX — Escaneie ou copie</div>
+      <div class="pix-qr-wrap">
+        <canvas id="pix-send-canvas" width="180" height="180"></canvas>
+      </div>
+      <div class="pix-key-label">Chave PIX</div>
+      <div class="pix-key" id="pix-send-key" style="margin-bottom:12px;"></div>
+      <button class="pix-copy-btn" id="pixsend-copy-btn" onclick="copyPixSend()" style="width:100%;font-size:17px;padding:13px;border-radius:9px;">
+        📋 Copiar chave PIX
+      </button>
+    </div>
+
+    <div style="background:rgba(37,211,102,.07);border:1px solid rgba(37,211,102,.25);border-radius:10px;padding:12px 14px;margin-bottom:18px;font-size:13px;color:#aaa;line-height:1.7;">
+      <strong style="color:#6dc96d;">✅ Como funciona:</strong><br>
+      1. Copie a chave PIX acima<br>
+      2. Faça o pagamento no seu banco<br>
+      3. Clique no botão abaixo para enviar o pedido + comprovante pelo WhatsApp
+    </div>
+
+    <button class="finalize-btn" onclick="sendToWhatsapp()" style="font-size:19px;padding:17px;">
+      <span>💬</span> ENVIAR PEDIDO + COMPROVANTE
+    </button>
+    <button class="close-btn" style="margin-top:10px;" onclick="document.getElementById('pixsend-overlay').classList.remove('open');document.getElementById('checkout-overlay').classList.add('open');">← Voltar</button>
+  </div>
+</div>
+
 <!-- TRACKING OVERLAY -->
 <div class="tracking-overlay" id="tracking-overlay">
   <div class="tracking-box">
@@ -642,24 +682,12 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
       <label>Observações gerais</label>
       <textarea id="f-obs" rows="2" placeholder="Alguma observação geral do pedido?"></textarea>
     </div>
-    <div class="pix-box">
-      <div class="pix-title">💳 Pagamento via PIX</div>
-      <div class="pix-qr-wrap">
-        <canvas id="pix-qr-canvas" width="180" height="180"></canvas>
-      </div>
-      <div class="pix-key-label">Chave PIX (copie e cole)</div>
-      <div class="pix-key-row">
-        <div class="pix-key" id="pix-key-display"></div>
-        <button class="pix-copy-btn" id="pix-copy-btn" onclick="copyPix()">📋 Copiar</button>
-      </div>
-      <div class="pix-notice">
-        ⚠️ <strong>Atenção:</strong> Após enviar o pedido, pague via PIX e <strong>envie o comprovante pelo WhatsApp.</strong><br>
-        O pedido só será preparado após a <strong>confirmação do pagamento.</strong>
-      </div>
-    </div>
     <div class="cart-totals" id="checkout-totals"></div>
+    <div style="background:rgba(37,211,102,.07);border:1px solid rgba(37,211,102,.25);border-radius:10px;padding:11px 14px;margin-bottom:14px;font-size:13px;color:#aaa;line-height:1.6;">
+      💳 No próximo passo você verá a <strong style="color:#6dc96d;">chave PIX</strong> e poderá enviar o pedido + comprovante pelo WhatsApp.
+    </div>
     <button class="finalize-btn" onclick="finalizeOrder()">
-      <span>💬</span> ENVIAR PEDIDO NO WHATSAPP
+      <span>➡️</span> CONTINUAR PARA O PAGAMENTO
     </button>
     <button class="close-btn" style="margin-top:10px;" onclick="document.getElementById('checkout-overlay').classList.remove('open')">Voltar</button>
   </div>
@@ -1000,42 +1028,13 @@ function lookupCliente(val){
 function openCheckout(){
   if(!cart.length){toast('Carrinho vazio!');return;}
   document.getElementById('cart-overlay').classList.remove('open');
-  document.getElementById('pix-key-display').textContent=PIX_KEY;
-  const canvas=document.getElementById('pix-qr-canvas');
-  const ctx=canvas.getContext('2d');
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  const tmp=document.createElement('div');
-  tmp.style.display='none';
-  document.body.appendChild(tmp);
-  new QRCode(tmp,{text:PIX_KEY,width:168,height:168,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M});
-  setTimeout(()=>{
-    const img=tmp.querySelector('img')||tmp.querySelector('canvas');
-    if(img){
-      const qrImg=new Image();
-      qrImg.onload=()=>{
-        ctx.fillStyle='#ffffff';
-        ctx.roundRect?ctx.roundRect(0,0,180,180,8):ctx.fillRect(0,0,180,180);
-        ctx.fill();
-        ctx.drawImage(qrImg,6,6,168,168);
-      };
-      qrImg.src=img.src||(img.toDataURL&&img.toDataURL());
-    }
-    document.body.removeChild(tmp);
-  },100);
   const showAddr=orderType==='delivery';
   document.getElementById('delivery-fields').style.display=showAddr?'block':'none';
   renderCartTotals('checkout-totals');
   document.getElementById('checkout-overlay').classList.add('open');
 }
 
-function copyPix(){
-  navigator.clipboard.writeText(PIX_KEY).then(()=>{
-    const btn=document.getElementById('pix-copy-btn');
-    btn.textContent='Copiado ✓';btn.classList.add('copied');
-    setTimeout(()=>{btn.textContent='Copiar';btn.classList.remove('copied');},2500);
-  }).catch(()=>toast('Copie manualmente: '+PIX_KEY));
-}
-
+// ═══ INIT ══════════════════════════════════════════════
 function validate(){
   let ok=true;
   const base=[['f-nome','err-nome'],['f-tel','err-tel']];
@@ -1093,49 +1092,117 @@ function finalizeOrder(){
   msg += `🔑 *Chave PIX:* ${PIX_KEY}\n`;
   msg += `\n⚠️ _Envie o comprovante do PIX para confirmar o pedido!_`;
 
-  // ✅ ABRE O WHATSAPP IMEDIATAMENTE (ainda no contexto do clique do usuário)
-  // Isso garante que o iOS/Android não bloqueie como popup
-  const waUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
-  window.location.href = waUrl;
+  // Salva cliente localmente
+  saveCliente(tel, nome, end, ref);
 
-  // Prepara a tela de tracking
-  if(orderType==='retirada'){
+  // Guarda dados do pedido para usar no botão de envio
+  pendingOrder = {
+    nome, tel, end, ref, obs, sub, fee, total, typeEmoji,
+    waUrl: `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`,
+    cartSnapshot: [...cart],
+    orderType: orderType
+  };
+
+  // Fecha checkout e abre tela de PIX + envio
+  document.getElementById('checkout-overlay').classList.remove('open');
+  openPixSend();
+}
+
+// Dados do pedido pendente antes de enviar pro WhatsApp
+let pendingOrder = null;
+
+function openPixSend(){
+  if(!pendingOrder) return;
+  // Preenche os dados na tela de envio
+  document.getElementById('pix-send-total').textContent = fmt(pendingOrder.total);
+  document.getElementById('pix-send-key').textContent = PIX_KEY;
+
+  // Gera QR code na tela de envio
+  const canvas = document.getElementById('pix-send-canvas');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const tmp = document.createElement('div');
+  tmp.style.display = 'none';
+  document.body.appendChild(tmp);
+  new QRCode(tmp,{text:PIX_KEY,width:168,height:168,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M});
+  setTimeout(()=>{
+    const img = tmp.querySelector('img')||tmp.querySelector('canvas');
+    if(img){
+      const qrImg = new Image();
+      qrImg.onload = ()=>{
+        ctx.fillStyle = '#ffffff';
+        ctx.roundRect ? ctx.roundRect(0,0,180,180,8) : ctx.fillRect(0,0,180,180);
+        ctx.fill();
+        ctx.drawImage(qrImg,6,6,168,168);
+      };
+      qrImg.src = img.src||(img.toDataURL&&img.toDataURL());
+    }
+    document.body.removeChild(tmp);
+  },100);
+
+  document.getElementById('pixsend-overlay').classList.add('open');
+}
+
+function copyPixSend(){
+  navigator.clipboard.writeText(PIX_KEY).then(()=>{
+    const btn = document.getElementById('pixsend-copy-btn');
+    btn.textContent = '✓ Copiado!';
+    btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent = '📋 Copiar chave PIX'; btn.classList.remove('copied'); }, 2500);
+  }).catch(()=>{
+    // fallback para iOS antigo
+    const el = document.createElement('textarea');
+    el.value = PIX_KEY;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    toast('Chave PIX copiada! ✓');
+  });
+}
+
+function sendToWhatsapp(){
+  if(!pendingOrder) return;
+
+  // Prepara tracking
+  if(pendingOrder.orderType==='retirada'){
     document.getElementById('ts-entrega-nome').textContent = 'Pronto para retirada';
     document.getElementById('ts-entrega-desc').textContent = 'Seu pedido está te esperando!';
-  } else if(orderType==='balcao'){
+  } else if(pendingOrder.orderType==='balcao'){
     document.getElementById('ts-entrega-nome').textContent = 'Pronto!';
     document.getElementById('ts-entrega-desc').textContent = 'Pegue no balcão';
   } else {
     document.getElementById('ts-entrega-nome').textContent = 'Saiu para entrega';
     document.getElementById('ts-entrega-desc').textContent = 'A caminho do seu endereço';
   }
-  document.getElementById('tracking-sub').textContent = `Olá, ${nome}! Acompanhe em tempo real`;
+  document.getElementById('tracking-sub').textContent = `Olá, ${pendingOrder.nome}! Acompanhe em tempo real`;
 
-  // Salva cliente localmente
-  saveCliente(tel, nome, end, ref);
-
-  // Limpa carrinho e UI
-  const cartSnapshot = [...cart];
+  // Limpa carrinho
+  const snap = pendingOrder.cartSnapshot;
+  const od   = pendingOrder;
   cart = [];
-  orderType = 'delivery';
-  document.getElementById('checkout-overlay').classList.remove('open');
   updateCartFloat();
+
+  // Fecha tela PIX e abre tracking
+  document.getElementById('pixsend-overlay').classList.remove('open');
   document.getElementById('tracking-overlay').classList.add('open');
   updateTrackingScreen('aguardando');
 
-  // Salva no Firebase em background (sem bloquear a abertura do WhatsApp)
+  // ✅ Abre WhatsApp — ainda no contexto direto do clique do botão
+  window.open(pendingOrder.waUrl, '_blank');
+
+  // Salva no Firebase em background
   const orderData = {
-    cliente: nome, tel, end, ref, obs,
-    tipo: orderType,
-    itens: cartSnapshot.map(c => ({name:c.name, qty:c.qty, price:c.unitPrice, details:c.details||''})),
-    subtotal: sub, taxa: fee, total
+    cliente: od.nome, tel: od.tel, end: od.end, ref: od.ref, obs: od.obs,
+    tipo: od.orderType,
+    itens: snap.map(c=>({name:c.name,qty:c.qty,price:c.unitPrice,details:c.details||''})),
+    subtotal: od.sub, taxa: od.fee, total: od.total
   };
-  saveOrderToFirebase(orderData).then(orderId => {
-    if(orderId){
-      currentOrderId = orderId;
-      watchOrderStatus(orderId);
-    }
+  saveOrderToFirebase(orderData).then(orderId=>{
+    if(orderId){ currentOrderId = orderId; watchOrderStatus(orderId); }
   }).catch(()=>{});
+
+  pendingOrder = null;
 }
 
 const TRACKING_ORDER = ['aguardando','aceito','preparando','entrega','entregue'];
@@ -1294,9 +1361,6 @@ function confirmRefri(){
   document.getElementById('refri-overlay').classList.remove('open');
   updateCartFloat();
 }
-
-// ═══ INIT ══════════════════════════════════════════════
-document.getElementById('pix-key-display').textContent = PIX_KEY;
 </script>
 </body>
 </html>
