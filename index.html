@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, ">
 <title>King Angus — Cardápio</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -118,7 +118,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
   padding:14px 24px;border-radius:50px;cursor:pointer;
   box-shadow:0 6px 28px rgba(214,40,40,.5);
   display:none;align-items:center;gap:12px;
-  min-width:260px;justify-content:space-between;
+  width:90%;max-width:340px;justify-content:space-between;
   z-index:100;transition:all .2s;
 }
 .cart-float.visible{display:flex;}
@@ -289,6 +289,15 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
 .footer p{font-size:13.5px;color:var(--muted);line-height:2;}
 .footer strong{color:var(--text);}
 .footer-stamp{font-family:'Bebas Neue';font-size:13px;letter-spacing:3px;color:var(--red);margin-top:12px;display:block;}
+
+@media (max-width:600px){
+.hero h1{font-size:42px;}
+.item-name{font-size:16px;}
+.item-price{font-size:20px;}
+.add-btn{font-size:15px;padding:10px;}
+.cart-float{width:90%;max-width:340px;}
+}
+
 </style>
 </head>
 <body>
