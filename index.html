@@ -254,6 +254,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
 .tracking-step.done .ts-icon{border-color:#25d366;background:rgba(37,211,102,.1);}
 .tracking-step.active .ts-icon{border-color:#ffd166;background:rgba(255,209,102,.1);animation:pulse-gold 1.5s infinite;}
 @keyframes pulse-gold{0%,100%{box-shadow:0 0 0 0 rgba(255,209,102,.4)}50%{box-shadow:0 0 0 8px rgba(255,209,102,0)}}
+@keyframes pulse-live{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
 .ts-info{text-align:left;padding-top:8px;}
 .ts-name{font-size:15px;font-weight:600;color:#888;}
 .tracking-step.done .ts-name{color:#25d366;}
@@ -690,37 +691,76 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
 <!-- TRACKING OVERLAY -->
 <div class="tracking-overlay" id="tracking-overlay">
   <div class="tracking-box">
+
     <div class="tracking-title">👑 SEU PEDIDO</div>
     <div class="tracking-sub" id="tracking-sub">Acompanhe em tempo real</div>
+
+    <!-- BANNER DE STATUS ATUAL — destaque grande no topo -->
+    <div id="status-banner" style="
+      background:rgba(255,209,102,.08);
+      border:1.5px solid rgba(255,209,102,.25);
+      border-radius:14px;
+      padding:16px 18px;
+      margin-bottom:24px;
+      text-align:center;
+      transition: all .4s ease;
+    ">
+      <div id="status-banner-icon" style="font-size:36px;margin-bottom:6px;">📋</div>
+      <div id="status-banner-title" style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1.5px;color:#ffd166;">AGUARDANDO PAGAMENTO</div>
+      <div id="status-banner-desc" style="font-size:13px;color:#888;margin-top:4px;">Envie o comprovante PIX para confirmar</div>
+    </div>
+
+    <!-- INDICADOR DE ATUALIZAÇÃO AO VIVO -->
+    <div id="live-indicator" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px;">
+      <span id="live-dot" style="width:8px;height:8px;border-radius:50%;background:#25d366;display:inline-block;animation:pulse-live 1.5s infinite;"></span>
+      <span id="live-text" style="font-size:12px;color:#555;font-weight:600;letter-spacing:.5px;">ATUALIZANDO AO VIVO</span>
+    </div>
+
+    <!-- STEPS -->
     <div class="tracking-steps">
       <div class="tracking-step" id="ts-aguardando">
         <div class="ts-icon">📋</div>
-        <div class="ts-info"><div class="ts-name">Pedido recebido</div><div class="ts-desc">Aguardando confirmação do pagamento</div></div>
+        <div class="ts-info">
+          <div class="ts-name">Pedido recebido</div>
+          <div class="ts-desc">Aguardando confirmação do pagamento</div>
+        </div>
       </div>
       <div class="tracking-step" id="ts-aceito">
         <div class="ts-icon">✅</div>
-        <div class="ts-info"><div class="ts-name">Pedido aceito</div><div class="ts-desc">Pagamento confirmado!</div></div>
+        <div class="ts-info">
+          <div class="ts-name">Pedido aceito</div>
+          <div class="ts-desc">Pagamento confirmado — partiu! 🔥</div>
+        </div>
       </div>
       <div class="tracking-step" id="ts-preparando">
         <div class="ts-icon">👨‍🍳</div>
-        <div class="ts-info"><div class="ts-name">Em preparação</div><div class="ts-desc">Seu burger está na chapa!</div></div>
+        <div class="ts-info">
+          <div class="ts-name">Em preparação</div>
+          <div class="ts-desc">Seu burger está na chapa!</div>
+        </div>
       </div>
       <div class="tracking-step" id="ts-entrega">
         <div class="ts-icon">🛵</div>
-        <div class="ts-info"><div class="ts-name" id="ts-entrega-nome">Saiu para entrega</div><div class="ts-desc" id="ts-entrega-desc">A caminho do seu endereço</div></div>
+        <div class="ts-info">
+          <div class="ts-name" id="ts-entrega-nome">Saiu para entrega</div>
+          <div class="ts-desc" id="ts-entrega-desc">A caminho do seu endereço</div>
+        </div>
       </div>
       <div class="tracking-step" id="ts-entregue">
         <div class="ts-icon">🎉</div>
-        <div class="ts-info"><div class="ts-name">Entregue!</div><div class="ts-desc">Bom apetite! 🍔</div></div>
+        <div class="ts-info">
+          <div class="ts-name">Entregue!</div>
+          <div class="ts-desc">Bom apetite! 🍔👑</div>
+        </div>
       </div>
     </div>
 
-    <!-- ✅ FIX 2: Botão de comprovante PIX -->
-    <a id="comprovante-btn" href="#" class="comprovante-btn comprovante-pulse" onclick="enviarComprovante(event)">
+    <!-- BOTÃO COMPROVANTE -->
+    <a id="comprovante-btn" href="#" class="comprovante-btn comprovante-pulse" onclick="enviarComprovante(event)" style="margin-top:24px;">
       <span>📎</span> ENVIAR COMPROVANTE PIX
     </a>
 
-    <button id="confirm-delivery-btn" onclick="confirmDelivery()" style="display:none;margin-top:16px;width:100%;background:#25d366;border:none;border-radius:10px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;padding:15px;cursor:pointer;">
+    <button id="confirm-delivery-btn" onclick="confirmDelivery()" style="display:none;margin-top:12px;width:100%;background:#25d366;border:none;border-radius:10px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;padding:15px;cursor:pointer;">
       ✅ RECEBI MEU PEDIDO
     </button>
     <button class="tracking-new-order" onclick="newOrder()">+ Fazer novo pedido</button>
@@ -946,23 +986,7 @@ async function saveOrderToFirebase(orderData){
   } catch(e){ return null; }
 }
 
-async function watchOrderStatus(orderId){
-  currentOrderId = orderId;
-  // Atualiza botão de comprovante com o orderId
-  updateComprovanteBtn(orderId);
-  showTrackingScreen(orderId, 'aguardando');
-  const interval = setInterval(async ()=>{
-    try {
-      const res = await fetch(`${FB_URL}/pedidos/${orderId}.json`);
-      const data = await res.json();
-      if(!data){ clearInterval(interval); return; }
-      updateTrackingScreen(data.status);
-      if(data.status === 'entregue') clearInterval(interval);
-    } catch(e){}
-  }, 5000);
-}
-
-// ✅ FIX 2: Função do botão comprovante
+// Função do botão comprovante
 function updateComprovanteBtn(orderId, nome){
   const nomeStr = nome ? `👤 *Cliente:* ${nome}\n` : '';
   const idStr = orderId
@@ -1457,19 +1481,126 @@ function onWaSendClick(){
 function finalizeOrder(){ prepareOrder(); }
 
 
-const TRACKING_ORDER = ['aguardando','aceito','preparando','entrega','entregue'];
-const TRACKING_IDS   = ['ts-aguardando','ts-aceito','ts-preparando','ts-entrega','ts-entregue'];
+async function watchOrderStatus(orderId){
+  currentOrderId = orderId;
+  updateComprovanteBtn(orderId);
+  updateTrackingScreen('aguardando');
 
-function showTrackingScreen(orderId, status){ updateTrackingScreen(status); }
+  let lastStatus = 'aguardando';
+  let failCount  = 0;
+
+  const interval = setInterval(async ()=>{
+    try {
+      const res  = await fetch(`${FB_URL}/pedidos/${orderId}.json?_=${Date.now()}`);
+      const data = await res.json();
+      if(!data){ clearInterval(interval); return; }
+
+      failCount = 0;
+      setLiveIndicator(true);
+
+      // Só atualiza se mudou
+      if(data.status && data.status !== lastStatus){
+        lastStatus = data.status;
+        updateTrackingScreen(data.status);
+        flashStatusChange();
+      }
+
+      if(data.status === 'entregue') clearInterval(interval);
+    } catch(e){
+      failCount++;
+      if(failCount >= 3) setLiveIndicator(false); // sem conexão
+    }
+  }, 4000);
+}
+
+function setLiveIndicator(online){
+  const dot  = document.getElementById('live-dot');
+  const text = document.getElementById('live-text');
+  if(!dot) return;
+  if(online){
+    dot.style.background  = '#25d366';
+    dot.style.animation   = 'pulse-live 1.5s infinite';
+    text.textContent      = 'ATUALIZANDO AO VIVO';
+    text.style.color      = '#555';
+  } else {
+    dot.style.background  = '#555';
+    dot.style.animation   = 'none';
+    text.textContent      = 'SEM CONEXÃO — TENTANDO RECONECTAR...';
+    text.style.color      = '#d62828';
+  }
+}
+
+// Pisca o banner quando muda de status
+function flashStatusChange(){
+  const banner = document.getElementById('status-banner');
+  if(!banner) return;
+  banner.style.transform  = 'scale(1.03)';
+  banner.style.boxShadow  = '0 0 0 3px rgba(255,209,102,.4)';
+  setTimeout(()=>{
+    banner.style.transform = 'scale(1)';
+    banner.style.boxShadow = 'none';
+  }, 600);
+}
+
+const STATUS_BANNER = {
+  aguardando: {
+    icon:'📋', color:'rgba(255,209,102,.08)', border:'rgba(255,209,102,.25)',
+    titleColor:'#ffd166',
+    title:'AGUARDANDO PAGAMENTO',
+    desc:'Envie o comprovante PIX para confirmar'
+  },
+  aceito: {
+    icon:'✅', color:'rgba(37,211,102,.08)', border:'rgba(37,211,102,.3)',
+    titleColor:'#25d366',
+    title:'PEDIDO ACEITO! 🎉',
+    desc:'Pagamento confirmado — sua comida já vai sair!'
+  },
+  preparando: {
+    icon:'👨‍🍳', color:'rgba(255,100,30,.08)', border:'rgba(255,100,30,.3)',
+    titleColor:'#ff7c30',
+    title:'NA CHAPA AGORA! 🔥',
+    desc:'Seu burger está sendo preparado com carinho'
+  },
+  entrega: {
+    icon:'🛵', color:'rgba(30,150,255,.08)', border:'rgba(30,150,255,.3)',
+    titleColor:'#4db8ff',
+    title:'SAIU PARA ENTREGA!',
+    desc:'O motoboy está a caminho — fique de olho!'
+  },
+  entregue: {
+    icon:'🎉', color:'rgba(37,211,102,.1)', border:'rgba(37,211,102,.4)',
+    titleColor:'#25d366',
+    title:'ENTREGUE! BOM APETITE!',
+    desc:'Obrigado por pedir no King Angus 👑'
+  },
+};
 
 function updateTrackingScreen(status){
+  // Atualiza steps
+  const TRACKING_ORDER = ['aguardando','aceito','preparando','entrega','entregue'];
+  const TRACKING_IDS   = ['ts-aguardando','ts-aceito','ts-preparando','ts-entrega','ts-entregue'];
   const idx = TRACKING_ORDER.indexOf(status);
   TRACKING_IDS.forEach((id,i)=>{
     const el = document.getElementById(id);
+    if(!el) return;
     el.classList.remove('done','active');
-    if(i < idx) el.classList.add('done');
-    else if(i === idx) el.classList.add('active');
+    if(i < idx)      el.classList.add('done');
+    else if(i===idx) el.classList.add('active');
   });
+
+  // Atualiza banner de status
+  const cfg = STATUS_BANNER[status] || STATUS_BANNER['aguardando'];
+  const banner = document.getElementById('status-banner');
+  if(banner){
+    banner.style.background = cfg.color;
+    banner.style.borderColor = cfg.border;
+    document.getElementById('status-banner-icon').textContent  = cfg.icon;
+    document.getElementById('status-banner-title').textContent = cfg.title;
+    document.getElementById('status-banner-title').style.color = cfg.titleColor;
+    document.getElementById('status-banner-desc').textContent  = cfg.desc;
+  }
+
+  // Botão "recebi"
   const confirmBtn = document.getElementById('confirm-delivery-btn');
   if(confirmBtn) confirmBtn.style.display = status==='entrega' ? 'block' : 'none';
 }
