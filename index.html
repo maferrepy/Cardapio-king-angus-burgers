@@ -508,7 +508,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
       </div>
       <div class="item-img-body">
         <div class="item-img-name">👑 King Angus</div>
-        <div class="item-img-desc">Pão brioche · Hambúrguer Angus de picanha · Queijo prato ou cheddar · Picles · Bacon crocante · Cebola caramelizada · Molho da casa</div>
+        <div class="item-img-desc">Pão brioche · Hambúrguer Angus de picanha · Queijo mussarela ou cheddar · Picles · Bacon crocante · Cebola caramelizada · Molho da casa</div>
         <div class="item-img-separator"></div>
         <button class="add-btn" style="margin-top:0" onclick="openCustomize('king-angus')">+ Adicionar</button>
       </div>
@@ -529,7 +529,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
       </div>
       <div class="item-img-body">
         <div class="item-img-name">🔥 Angus Supremo</div>
-        <div class="item-img-desc">Pão brioche · Hambúrguer Angus · Queijo prato ou cheddar · Cebola roxa · Tomate · Alface · Molho King</div>
+        <div class="item-img-desc">Pão brioche · Hambúrguer Angus · Queijo  mussarela ou cheddar · Cebola roxa · Tomate · Alface · Molho King</div>
         <div class="item-img-separator"></div>
         <button class="add-btn" style="margin-top:0" onclick="openCustomize('angus-supremo')">+ Adicionar</button>
       </div>
@@ -547,7 +547,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
       </div>
       <div class="item-img-body">
         <div class="item-img-name">🥓 Angus Bacon</div>
-        <div class="item-img-desc">Pão brioche · Hambúrguer Angus · Queijo prato ou cheddar · Bacon crocante · Picles · Molho King</div>
+        <div class="item-img-desc">Pão brioche · Hambúrguer Angus · Queijo  mussarela ou cheddar · Bacon crocante · Picles · Molho King</div>
         <div class="item-img-separator"></div>
         <button class="add-btn" style="margin-top:0" onclick="openCustomize('angus-bacon')">+ Adicionar</button>
       </div>
@@ -568,7 +568,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
       </div>
       <div class="item-img-body">
         <div class="item-img-name">🧀 Classic Cheese</div>
-        <div class="item-img-desc">Pão brioche · Hambúrguer Angus · Queijo prato ou cheddar</div>
+        <div class="item-img-desc">Pão brioche · Hambúrguer Angus · Queijo  mussarela ou cheddar</div>
         <div class="item-img-separator"></div>
         <button class="add-btn" style="margin-top:0" onclick="openCustomize('classic-cheese')">+ Adicionar</button>
       </div>
@@ -1023,31 +1023,30 @@ function enviarComprovante(e){
 const BURGERS = {
   'king-angus':{
     name:'👑 King Angus',price:34.99,doublePrice:39.99,
-    desc:'Pão brioche · Hambúrguer Angus de picanha · Queijo prato ou cheddar · Picles · Bacon crocante · Cebola caramelizada · Molho da casa',
+    desc:'Pão brioche · Hambúrguer Angus de picanha · Queijo mussarela ou cheddar · Picles · Bacon crocante · Cebola caramelizada · Molho da casa',
     removable:['Picles','Bacon','Cebola caramelizada','Molho da casa','Queijo']
   },
   'angus-supremo':{
     name:'🔥 Angus Supremo',price:23.90,doublePrice:32.99,
-    desc:'Pão brioche · Hambúrguer Angus · Queijo prato ou cheddar · Cebola roxa · Tomate · Alface · Molho King',
+    desc:'Pão brioche · Hambúrguer Angus · Queijo  mussarela ou cheddar · Cebola roxa · Tomate · Alface · Molho King',
     removable:['Cebola roxa','Tomate','Alface','Molho King','Queijo']
   },
   'angus-bacon':{
     name:'🥓 Angus Bacon',price:26.99,doublePrice:29.99,
-    desc:'Pão brioche · Hambúrguer Angus · Queijo prato ou cheddar · Bacon crocante · Picles · Molho King',
+    desc:'Pão brioche · Hambúrguer Angus · Queijo  mussarela ou cheddar · Bacon crocante · Picles · Molho King',
     removable:['Bacon','Picles','Molho King','Queijo']
   },
   'classic-cheese':{
     name:'🧀 Classic Cheese',price:18.99,doublePrice:24.99,
-    desc:'Pão brioche · Hambúrguer Angus · Queijo prato ou cheddar',
+    desc:'Pão brioche · Hambúrguer Angus · Queijo  mussarela ou cheddar',
     removable:['Queijo']
   }
 };
 
 const PONTOS = ['Ao Ponto','Smash 🔥'];
-const QUEIJOS = ['Queijo Prato','Cheddar','Sem queijo'];
+const QUEIJOS = ['Queijo  mussarela','Cheddar','Sem queijo'];
 const EXTRAS = [
   {name:'Bacon extra',price:4.00},
-  {name:'Ovo frito',price:3.00},
   {name:'Cheddar extra',price:3.50},
   {name:'Molho extra',price:2.00},
   {name:'Cebola caramelizada',price:3.00},
